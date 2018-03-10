@@ -7,17 +7,22 @@ from helpers.collect import Collect
 from helpers.snt import Snt
 
 class FineGrainedBase(geneticBase.GeneticAlgorithm):
-    def __init__(self, population_size, chromosome_size, number_of_generations, server_ip_addr, num_of_neighbours):
-        super().__init__(population_size, chromosome_size, number_of_generations, server_ip_addr)
+    def __init__(self, population_size, chromosome_size,
+                 number_of_generations, server_ip_addr,
+                 num_of_neighbours, neighbourhood_size):
+        super().__init__(population_size, chromosome_size,
+                         number_of_generations, server_ip_addr)
         self._channel = None
         self._queue_to_produce = None
         self._queues_to_consume = None
         self._num_of_neighbours = num_of_neighbours
         self._queue_name = None
+        self._connection = None
+        self._neighbourhood_size = neighbourhood_size
 
     def _start_MPI(self):
         channels = []
-        channels.extend(self._initialize_topology)
+        channels.extend(self._initialize_topology(quantity=self._population_size, radius=self._neighbourhood_size))
         queue_to_produce = str(channels.pop(0))
         queues_to_consume = list(map(str, channels))
         logger.info("starting processing to queue: " + queue_to_produce
@@ -42,7 +47,11 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
         self._queue_to_produce = queue_to_produce
         self._queues_to_consume = queues_to_consume
         self._channel = channel
+        self._connection = connection
         time.sleep(5)
+
+    def _stop_MPI(self):
+        self._connection.close()
 
     def _initialize_topology(self, quantity, radius):
         channels_to_return = []
@@ -100,8 +109,8 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
 
     def _finish_processing(self, chromosome, mother):
         logger.info("father " + str(chromosome) + " mother " + str(mother))
-
+        mother.pop(0)
         self._crossover(chromosome, mother)
         # mother
         self._mutation(chromosome)
-        return self.fitness(chromosome), chromosome
+        return self.fitness(chromosome), list(map(float, chromosome))

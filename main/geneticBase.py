@@ -12,7 +12,7 @@ class GeneticAlgorithm(metaclass=abc.ABCMeta):
         self._number_of_generations = number_of_generations
         self._server_ip_addr = server_ip_addr
 
-    def _initialize_population(self):
+    def initialize_population(self):
         """
         Generate the population
         :return: population
@@ -78,9 +78,6 @@ class GeneticAlgorithm(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def _initialize_topology(self, quantity, radius):
-         pass
-    @abc.abstractmethod
     def _process(self,  *positional_parameters, **keyword_parameters):
         pass
 
@@ -96,11 +93,15 @@ class GeneticAlgorithm(metaclass=abc.ABCMeta):
     def _finish_processing(self, received_data, data):
         pass
 
-    def process(self):
+    @abc.abstractmethod
+    def _stop_MPI(self):
+        pass
+
+    def process(self, *positional_parameters, **keyword_parameters):
         toReturn = []
         self._start_MPI()
         for i in range(0, self._number_of_generations):
-            data = self._process()
+            data = self._process(positional_parameters, keyword_parameters)
             self._send_data(data)
             received_data = self._collect_data()
             toReturn = self._finish_processing(received_data, data)
