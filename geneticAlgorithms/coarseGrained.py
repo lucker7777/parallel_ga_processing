@@ -1,8 +1,8 @@
 import math
-from . import fineGrainedBase
+from . import coarseGrainedBase
 
 
-class FineGrained(fineGrainedBase.FineGrainedBase):
+class CoarseGrained(coarseGrainedBase.CoarseGrainedBase):
 
     def fitness(self, chromosome):
         first_sum = 0.0

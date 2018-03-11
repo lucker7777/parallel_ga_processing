@@ -5,8 +5,10 @@ import json
 from scoop import logger
 from helpers.collect import Collect
 from helpers.snt import Snt
+import abc
 
-class FineGrainedBase(geneticBase.GeneticAlgorithm):
+
+class FineGrainedBase(geneticBase.GeneticAlgorithm, metaclass=abc.ABCMeta):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
                  num_of_neighbours, neighbourhood_size):
@@ -20,9 +22,7 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
         self._connection = None
         self._neighbourhood_size = neighbourhood_size
 
-    def _start_MPI(self):
-        channels = []
-        channels.extend(self._initialize_topology(quantity=self._population_size, radius=self._neighbourhood_size))
+    def _start_MPI(self, channels):
         queue_to_produce = str(channels.pop(0))
         queues_to_consume = list(map(str, channels))
         logger.info("starting processing to queue: " + queue_to_produce
@@ -53,8 +53,10 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
     def _stop_MPI(self):
         self._connection.close()
 
-    def _initialize_topology(self, quantity, radius):
+    def initialize_topology(self):
         channels_to_return = []
+        quantity = self._population_size
+        radius = self._neighbourhood_size
         for x in range(quantity):
             channels = [x]
             for z in range(1, radius + 1):
@@ -69,15 +71,7 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
             channels_to_return.append(channels)
         return channels_to_return
 
-    def _process(self, *positional_parameters, **keyword_parameters):
-        chromosome = []
-        if 'chromosome' in keyword_parameters:
-            chromosome = keyword_parameters['chromosome']
-        elif len(positional_parameters) == 1 and positional_parameters[0] is list:
-            chromosome = positional_parameters[0]
-        else:
-            print('no optional parameter, sorry')
-            return
+    def _process(self, chromosome):
         fit = self.fitness(chromosome)
         to_send = [float(fit)]
         to_send.extend(list(map(float, chromosome)))
@@ -85,8 +79,8 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
 
     def _send_data(self, data):
         self._channel.basic_publish(exchange='direct_logs',
-                              routing_key=self._queue_to_produce,
-                              body=json.dumps(data))
+                                    routing_key=self._queue_to_produce,
+                                    body=json.dumps(data))
 
     def _collect_data(self):
         neighbours = Collect()
@@ -104,8 +98,8 @@ class FineGrainedBase(geneticBase.GeneticAlgorithm):
 
             else:
                 logger.info(self._queue_to_produce + ' No message returned')
-            sorted_x = neighbours.sort_objects()
-            return sorted_x.pop(0).chromosome
+        sorted_x = neighbours.sort_objects()
+        return sorted_x.pop(0).chromosome
 
     def _finish_processing(self, chromosome, mother):
         logger.info("father " + str(chromosome) + " mother " + str(mother))

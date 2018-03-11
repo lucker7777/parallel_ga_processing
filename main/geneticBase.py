@@ -1,9 +1,8 @@
 import numpy
 import random
-import time
-import pika
-from scoop import logger
 import abc
+from scoop import logger
+
 
 class GeneticAlgorithm(metaclass=abc.ABCMeta):
     def __init__(self, population_size, chromosome_size, number_of_generations, server_ip_addr):
@@ -25,9 +24,8 @@ class GeneticAlgorithm(metaclass=abc.ABCMeta):
     def _gen_individual(self):
         """
         Generate binary array
-        :return: individual's chromosome
         """
-        return list(map(bytes,
+        return list(map(int,
                         numpy.random.randint(
                             2,
                             size=self._chromosome_size)))
@@ -74,11 +72,11 @@ class GeneticAlgorithm(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def _start_MPI(self):
+    def _start_MPI(self, channels):
         pass
 
     @abc.abstractmethod
-    def _process(self,  *positional_parameters, **keyword_parameters):
+    def _process(self, chromosome):
         pass
 
     @abc.abstractmethod
@@ -97,11 +95,15 @@ class GeneticAlgorithm(metaclass=abc.ABCMeta):
     def _stop_MPI(self):
         pass
 
-    def process(self, *positional_parameters, **keyword_parameters):
+    def __call__(self, initial_data, channels):
         toReturn = []
-        self._start_MPI()
+
+        logger.info("Process started with initial data " + str(initial_data) +
+                    " and channels " + str(channels))
+        self._start_MPI(channels)
         for i in range(0, self._number_of_generations):
-            data = self._process(positional_parameters, keyword_parameters)
+
+            data = self._process(initial_data)
             self._send_data(data)
             received_data = self._collect_data()
             toReturn = self._finish_processing(received_data, data)
