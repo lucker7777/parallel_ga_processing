@@ -1,4 +1,4 @@
-from geneticAlgorithms import geneticBase
+from geneticAlgorithms import geneticGrainedBase
 import time
 import pika
 import json
@@ -8,7 +8,7 @@ from helpers.snt import Snt
 import abc
 
 
-class FineGrainedBase(geneticBase.GeneticAlgorithm, metaclass=abc.ABCMeta):
+class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclass=abc.ABCMeta):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
                  num_of_neighbours, neighbourhood_size):

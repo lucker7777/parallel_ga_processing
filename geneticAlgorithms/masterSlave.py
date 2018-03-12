@@ -8,14 +8,11 @@ from helpers.collect import Collect
 from helpers.snt import Snt
 
 
-class MasterSlave(geneticBase.GeneticAlgorithm, metaclass=abc.ABCMeta):
+class MasterSlave(geneticBase.GeneticAlgorithmBase, metaclass=abc.ABCMeta):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations):
         super().__init__(population_size, chromosome_size, number_of_generations)
         self._population = self.initialize_population()
-
-    def _start_MPI(self, channels):
-        pass
 
     def _process(self, data):
         """
@@ -113,18 +110,11 @@ class MasterSlave(geneticBase.GeneticAlgorithm, metaclass=abc.ABCMeta):
         sorted_max = neighbours.sort_objects().pop(0)
         return sorted_max.fit, sorted_max.chromosome
 
-    def _send_data(self, data):
-        pass
+    def __call__(self):
+        toReturn = []
 
-    def _collect_data(self):
-        pass
-
-    def _finish_processing(self, received_data, data):
-        return data
-
-    def _stop_MPI(self):
-        pass
-
-    def fitness(self, chromosome):
-        pass
+        logger.info("Process started")
+        for i in range(0, self._number_of_generations):
+            toReturn = self._process(None)
+        return toReturn
 
