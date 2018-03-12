@@ -1,4 +1,4 @@
-from main import geneticBase
+from geneticAlgorithms import geneticBase
 import random
 import numpy
 from scoop import logger, futures

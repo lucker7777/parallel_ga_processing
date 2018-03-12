@@ -2,11 +2,12 @@ from geneticAlgorithms.coarseGrained import CoarseGrained
 from scoop import futures, logger
 
 
-if __name__ == '__main__':
-    population_size = 10
-    ins = CoarseGrained(population_size=population_size, chromosome_size=4,
-                      number_of_generations=100, server_ip_addr="127.0.0.1",
-                      num_of_neighbours=3, neighbourhood_size=3)
+def coarse_grained_runner(population_size, chromosome_size,
+                      number_of_generations, server_ip_addr,
+                      num_of_neighbours, neighbourhood_size):
+    ins = CoarseGrained(population_size=population_size, chromosome_size=chromosome_size,
+                      number_of_generations=number_of_generations, server_ip_addr=server_ip_addr,
+                      num_of_neighbours=num_of_neighbours, neighbourhood_size=neighbourhood_size)
     populations = []
     for i in range(0, population_size):
         populations.append(ins.initialize_population())

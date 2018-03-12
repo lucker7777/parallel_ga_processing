@@ -1,4 +1,4 @@
-from main import geneticBase
+from geneticAlgorithms import geneticBase
 import time
 import pika
 import json
