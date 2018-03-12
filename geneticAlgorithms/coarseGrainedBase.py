@@ -15,7 +15,7 @@ class CoarseGrainedBase(geneticBase.GeneticAlgorithm, metaclass=abc.ABCMeta):
                  number_of_generations, server_ip_addr,
                  num_of_neighbours, neighbourhood_size):
         super().__init__(population_size, chromosome_size,
-                         number_of_generations, server_ip_addr)
+                         number_of_generations)
         self._channel = None
         self._queue_to_produce = None
         self._queues_to_consume = None
@@ -24,6 +24,7 @@ class CoarseGrainedBase(geneticBase.GeneticAlgorithm, metaclass=abc.ABCMeta):
         self._connection = None
         self._neighbourhood_size = neighbourhood_size
         self._population = []
+        self._server_ip_addr = server_ip_addr
 
     def _start_MPI(self, channels):
         queue_to_produce = str(channels.pop(0))
