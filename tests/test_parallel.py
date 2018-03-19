@@ -1,7 +1,7 @@
 from unittest import TestCase
 from helpers import launcher
 
-path = "/home/martin/PycharmProjects/parallelGA/main"
+path = "/tmp/parallelGA/main"
 
 
 class TestParallel(TestCase):

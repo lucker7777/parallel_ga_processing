@@ -20,6 +20,9 @@ class GeneticAlgorithmBase(metaclass=abc.ABCMeta):
             population.append(self._gen_individual())
         return population
 
+    def initialize_topology(self):
+        pass
+
     def _gen_individual(self):
         """
         Generate binary array

@@ -26,6 +26,12 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
         self._population = []
         self._server_ip_addr = server_ip_addr
 
+    def initialize_population(self):
+        populations = []
+        for i in range(0, self._population_size):
+            populations.append(super().initialize_population())
+        return populations
+
     def _start_MPI(self, channels):
         queue_to_produce = str(channels.pop(0))
         queues_to_consume = list(map(str, channels))
