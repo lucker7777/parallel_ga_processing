@@ -5,8 +5,6 @@ import json
 import random
 import numpy
 from scoop import logger
-from helpers.collect import Collect
-from helpers.snt import Snt
 import abc
 
 
@@ -157,7 +155,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
         return channels_to_return
 
     def _collect_data(self):
-        neighbours = Collect()
+        neighbours = self._Collect()
         while neighbours.size_of_col() != self._num_of_neighbours:
             method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name), no_ack=False)
             if body:
@@ -167,7 +165,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
                 fit_val = received.pop(0)
                 vector = list(map(int, received))
                 print("PARSED " + str(fit_val) + " " + str(vector))
-                neighbours.append_object(Snt(fit_val, vector))
+                neighbours.append_object(self._Snt(fit_val, vector))
                 self._channel.basic_ack(method_frame.delivery_tag)
 
             else:
@@ -183,4 +181,3 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
 
     def _stop_MPI(self):
         self._connection.close()
-

@@ -54,4 +54,3 @@ class GeneticAlgorithmBase(metaclass=abc.ABCMeta):
             rnd = random.randint(0, self._chromosome_size - 1)
             chromosome[rnd] = abs(chromosome[rnd] - 1)
 
-

@@ -1,11 +1,12 @@
 from scoop import futures, logger
-from geneticAlgorithms import GeneticAlgorithmBase
+from geneticAlgorithms import GrainedGeneticAlgorithmBase
 
 
-def runner(genetic_algorithm):
-    if not isinstance(genetic_algorithm, GeneticAlgorithmBase):
+def run_grained_ga(genetic_algorithm):
+    if not isinstance(genetic_algorithm, GrainedGeneticAlgorithmBase):
         logger.info("Wrong instance")
-        return
+        raise TypeError("Wrong instance of genetic algorithm class.")
+
     populations = genetic_algorithm.initialize_population()
     channels = genetic_algorithm.initialize_topology()
     result = list(futures.map(genetic_algorithm, populations, channels))

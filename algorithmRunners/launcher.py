@@ -4,7 +4,7 @@ from scoop import logger, utils
 from scoop.launcher import ScoopApp
 
 
-def parallel(hosts_list, num_of_workers, path, executable):
+def launch(hosts_list, num_of_workers, path, executable):
     # Get a list of resources to launch worker(s) on
     hosts = utils.getHosts(None, hosts_list)
     external_hostname = [utils.externalHostname(hosts)]

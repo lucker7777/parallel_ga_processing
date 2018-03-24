@@ -1,4 +1,4 @@
+from .geneticGrainedBase import GrainedGeneticAlgorithmBase
+from .fineGrainedBase import FineGrainedBase
+from .masterSlaveBase import MasterSlaveBase
 from .geneticBase import GeneticAlgorithmBase
-from .coarseGrained import CoarseGrained
-from .fineGrained import FineGrained
-from .masterSlave import MasterSlave

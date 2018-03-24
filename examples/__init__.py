@@ -1,7 +1,7 @@
-from helpers import launcher
+from algorithmRunners import launch
 import os
 
 if __name__ == '__main__':
     path = str(os.getcwd()) + "/"
     executable = "runFineGrainedExample.py"
-    launcher.parallel(["localhost"], 10, path, executable)
+    launch(["localhost"], 10, path, executable)

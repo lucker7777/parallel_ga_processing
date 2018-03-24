@@ -1,8 +1,8 @@
+from geneticAlgorithms import MasterSlaveBase
 import math
-from . import coarseGrainedBase
 
 
-class CoarseGrained(coarseGrainedBase.CoarseGrainedBase):
+class MasterSlave(MasterSlaveBase):
 
     def fitness(self, chromosome):
         first_sum = 0.0
@@ -11,8 +11,5 @@ class CoarseGrained(coarseGrainedBase.CoarseGrainedBase):
             first_sum += c ** 2.0
             second_sum += math.cos(2.0 * math.pi * c)
         n = float(len(chromosome))
-        return 10 - (-20.0 * math.exp(-0.2 * math.sqrt(first_sum / n)) - math.exp(second_sum / n) + 20 + math.e)
-
-
-
-
+        return 10 - (-20.0 * math.exp(-0.2 * math.sqrt(first_sum / n)) - math.exp(
+            second_sum / n) + 20 + math.e), list(map(float, chromosome))
