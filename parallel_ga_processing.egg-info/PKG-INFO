@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: parallel-ga-processing
+Version: 1.0.1
+Summary: This package provides tools for processing hard problems with parallel genetic algorithm.
+Home-page: https://github.com/lucker7777/parallelGA
+Author: Martin Tuleja
+Author-email: holanga4321@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
