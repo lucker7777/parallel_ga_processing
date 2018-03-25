@@ -12,5 +12,6 @@ setup(
     author='Martin Tuleja',
     author_email='holanga4321@gmail.com',
     description='This package provides tools for processing hard problems with parallel genetic '
-                'algorithm.'
+                'algorithm.',
+    include_package_data=True
 )
