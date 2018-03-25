@@ -1,8 +1,11 @@
+MANIFEST.in
+README.rst
 setup.py
 algorithmRunners/__init__.py
 algorithmRunners/grainedGaRunner.py
 algorithmRunners/launcher.py
 algorithmRunners/masterSlaveGaRunner.py
+docs/doc.txt
 examples/__init__.py
 examples/coarseGrained.py
 examples/fineGrained.py
