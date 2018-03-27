@@ -1,6 +1,18 @@
 from algorithmRunners import run_master_slave_ga
-from .masterSlave import MasterSlave
+import math
+
+
+def fitness(chromosome):
+    first_sum = 0.0
+    second_sum = 0.0
+    for c in chromosome:
+        first_sum += c ** 2.0
+        second_sum += math.cos(2.0 * math.pi * c)
+    n = float(len(chromosome))
+    return 10 - (-20.0 * math.exp(-0.2 * math.sqrt(first_sum / n)) - math.exp(
+        second_sum / n) + 20 + math.e), list(map(float, chromosome))
+
+
 if __name__ == '__main__':
-    ins = MasterSlave(population_size=10, chromosome_size=4,
-                      number_of_generations=100)
-    run_master_slave_ga(ins)
+    run_master_slave_ga(population_size=10, chromosome_size=4,
+                        number_of_generations=100, fitness=fitness)

@@ -5,15 +5,14 @@ import json
 import random
 import numpy
 from scoop import logger
-import abc
 
 
-class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclass=abc.ABCMeta):
+class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
-                 num_of_neighbours, neighbourhood_size):
+                 num_of_neighbours, neighbourhood_size, fitness):
         super().__init__(population_size, chromosome_size,
-                         number_of_generations)
+                         number_of_generations, fitness)
         self._channel = None
         self._queue_to_produce = None
         self._queues_to_consume = None
@@ -73,7 +72,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
         # retrieve best fitness of population
         best_individual = None
         chromosomes_reproducing = {}
-        fit_values = [self.fitness(self._population[i]) for i in range(self._population_size)]
+        fit_values = [self._fitness(self._population[i]) for i in range(self._population_size)]
         fitness_max = max(fit_values)
         logger.info("fit values " + str(fit_values) + " max " + str(fitness_max))
         # choose individuals for reproduction based on probability
@@ -102,7 +101,8 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
         # Otherwise, put him to individuals dedicated
         # for reproduction
         logger.info(
-            "Actual popul is " + str(chromosomes_reproducing) + " with length " + str(len(chromosomes_reproducing)))
+            "Actual popul is " + str(chromosomes_reproducing) + " with length " + str(
+                len(chromosomes_reproducing)))
         logger.info("best indiv " + str(best_individual))
         if len(chromosomes_reproducing) % 2 == 0:
             self._population.append(best_individual)
@@ -157,7 +157,8 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclas
     def _collect_data(self):
         neighbours = self._Collect()
         while neighbours.size_of_col() != self._num_of_neighbours:
-            method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name), no_ack=False)
+            method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name),
+                                                                       no_ack=False)
             if body:
                 received = list(map(float, json.loads(body)))
                 logger.info(self._queue_to_produce + " RECEIVED " + str(received))

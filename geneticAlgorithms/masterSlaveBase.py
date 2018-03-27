@@ -5,15 +5,11 @@ from scoop import logger, futures
 import abc
 
 
-class MasterSlaveBase(geneticBase.GeneticAlgorithmBase, metaclass=abc.ABCMeta):
+class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
-                 number_of_generations):
-        super().__init__(population_size, chromosome_size, number_of_generations)
+                 number_of_generations, fitness):
+        super().__init__(population_size, chromosome_size, number_of_generations, fitness)
         self._population = self.initialize_population()
-
-    @abc.abstractmethod
-    def fitness(self, chromosome):
-        pass
 
     def _process(self, data):
         """
@@ -34,13 +30,13 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase, metaclass=abc.ABCMeta):
         # retrieve best fitness of population
         best_individual = None
         chromosomes_reproducing = {}
-        results = list(futures.map(self.fitness, self._population))
+        results = list(futures.map(self._fitness, self._population))
         neighbours = self._Collect()
         while neighbours.size_of_col() != self._population_size:
             fit_val, chromosome = results.pop(0)
             neighbours.append_object(self._Snt(fit_val, chromosome))
         sorted_x = neighbours.sort_objects()
-        fit_values = list(futures.map(self.fitness, self._population))
+        fit_values = list(futures.map(self._fitness, self._population))
         best_chromosome = sorted_x.pop(0)
         fitness_max = best_chromosome.fit
         best_individual = best_chromosome.chromosome
@@ -71,7 +67,8 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase, metaclass=abc.ABCMeta):
         # Otherwise, put him to individuals dedicated
         # for reproduction
         logger.info(
-            "Actual popul is " + str(chromosomes_reproducing) + " with length " + str(len(chromosomes_reproducing)))
+            "Actual popul is " + str(chromosomes_reproducing) + " with length " + str(
+                len(chromosomes_reproducing)))
         logger.info("best indiv " + str(best_individual))
         if len(chromosomes_reproducing) % 2 == 0:
             self._population.append(best_individual)
@@ -103,7 +100,7 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase, metaclass=abc.ABCMeta):
         :param population
         :return: best_weight, chromosome
         """
-        results = list(futures.map(self.fitness, population))
+        results = list(futures.map(self._fitness, population))
         neighbours = self._Collect()
         while neighbours.size_of_col() != self._population_size:
             fit_val, chromosome = results.pop(0)
@@ -118,4 +115,3 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase, metaclass=abc.ABCMeta):
         for i in range(0, self._number_of_generations):
             toReturn = self._process(None)
         return toReturn
-

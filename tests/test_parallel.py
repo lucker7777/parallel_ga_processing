@@ -1,7 +1,7 @@
 from unittest import TestCase
 from algorithmRunners import launch
 
-path = "/tmp/parallelGA/main"
+path = "/tmp/parallelGA/examples"
 
 
 class TestParallel(TestCase):

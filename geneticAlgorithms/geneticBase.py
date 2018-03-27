@@ -1,14 +1,14 @@
 import numpy
 import random
-import abc
 from scoop import logger
 
 
-class GeneticAlgorithmBase(metaclass=abc.ABCMeta):
-    def __init__(self, population_size, chromosome_size, number_of_generations):
+class GeneticAlgorithmBase(object):
+    def __init__(self, population_size, chromosome_size, number_of_generations, fitness):
         self._population_size = population_size
         self._chromosome_size = chromosome_size
         self._number_of_generations = number_of_generations
+        self._fitness = fitness
 
     def initialize_population(self):
         """

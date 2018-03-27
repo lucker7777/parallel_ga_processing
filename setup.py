@@ -7,7 +7,7 @@ setup(
     url='https://github.com/lucker7777/parallelGA',
     license='',
     install_requires=[
-          'scoop', 'pip', 'numpy'
+          'scoop', 'pika', 'numpy'
       ],
     author='Martin Tuleja',
     author_email='holanga4321@gmail.com',

@@ -3,15 +3,14 @@ import time
 import pika
 import json
 from scoop import logger
-import abc
 
 
-class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclass=abc.ABCMeta):
+class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
-                 num_of_neighbours, neighbourhood_size):
+                 num_of_neighbours, neighbourhood_size, fitness):
         super().__init__(population_size, chromosome_size,
-                         number_of_generations)
+                         number_of_generations, fitness)
         self._channel = None
         self._queue_to_produce = None
         self._queues_to_consume = None
@@ -71,7 +70,7 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclass=
         return channels_to_return
 
     def _process(self, chromosome):
-        fit = self.fitness(chromosome)
+        fit = self._fitness(chromosome)
         to_send = [float(fit)]
         to_send.extend(list(map(float, chromosome)))
         return to_send
@@ -106,4 +105,4 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase, metaclass=
         self._crossover(chromosome, mother)
         # mother
         self._mutation(chromosome)
-        return self.fitness(chromosome), list(map(float, chromosome))
+        return self._fitness(chromosome), list(map(float, chromosome))
