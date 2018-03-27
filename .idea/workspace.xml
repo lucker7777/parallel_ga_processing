@@ -2,21 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4dd494ad-0c10-4a72-9ff5-8bbee0d8c897" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/algorithmRunners/__init__.py" afterPath="$PROJECT_DIR$/algorithmRunners/__init__.py" />
-      <change beforePath="$PROJECT_DIR$/algorithmRunners/grainedGaRunner.py" afterPath="" />
-      <change beforePath="$PROJECT_DIR$/algorithmRunners/masterSlaveGaRunner.py" afterPath="$PROJECT_DIR$/algorithmRunners/masterSlaveGaRunner.py" />
+      <change beforePath="$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py" afterPath="$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py" />
+      <change beforePath="$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py" afterPath="$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py" />
       <change beforePath="$PROJECT_DIR$/examples/runCoarseGrainedExample.py" afterPath="$PROJECT_DIR$/examples/runCoarseGrainedExample.py" />
-      <change beforePath="$PROJECT_DIR$/examples/runFineGrainedExample.py" afterPath="$PROJECT_DIR$/examples/runFineGrainedExample.py" />
-      <change beforePath="$PROJECT_DIR$/examples/runMasterSlaveExample.py" afterPath="$PROJECT_DIR$/examples/runMasterSlaveExample.py" />
       <change beforePath="$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py" afterPath="$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py" />
-      <change beforePath="$PROJECT_DIR$/geneticAlgorithms/fineGrainedBase.py" afterPath="$PROJECT_DIR$/geneticAlgorithms/fineGrainedBase.py" />
       <change beforePath="$PROJECT_DIR$/geneticAlgorithms/geneticBase.py" afterPath="$PROJECT_DIR$/geneticAlgorithms/geneticBase.py" />
       <change beforePath="$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py" afterPath="$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py" />
-      <change beforePath="$PROJECT_DIR$/geneticAlgorithms/masterSlaveBase.py" afterPath="$PROJECT_DIR$/geneticAlgorithms/masterSlaveBase.py" />
-      <change beforePath="$PROJECT_DIR$/setup.py" afterPath="$PROJECT_DIR$/setup.py" />
       <change beforePath="$PROJECT_DIR$/tests/test_parallel.py" afterPath="$PROJECT_DIR$/tests/test_parallel.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,85 +21,35 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="test_parallel.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_parallel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="162">
-              <caret line="9" column="34" lean-forward="true" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="34" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="fineGrainedBase.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/geneticAlgorithms/fineGrainedBase.py">
+      <file leaf-file-name="masterSlaveGaRunner.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/algorithmRunners/masterSlaveGaRunner.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="90">
-              <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+              <caret line="6" column="20" lean-forward="false" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="coarseGrainedGaRunner.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="150">
+              <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
               <folding>
-                <element signature="e#0#48#0" expanded="true" />
+                <element signature="e#0#33#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="coarseGrainedBase.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py">
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/algorithmRunners/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="181" column="0" lean-forward="true" selection-start-line="181" selection-start-column="0" selection-end-line="181" selection-end-column="0" />
+            <state relative-caret-position="108">
+              <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
               <folding>
-                <element signature="e#0#48#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="runFineGrainedExample.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/examples/runFineGrainedExample.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="18" selection-end-column="90" />
-              <folding>
-                <element signature="e#0#48#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="runCoarseGrainedExample.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/runCoarseGrainedExample.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="234">
-              <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#50#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="fineGrained.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/fineGrained.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="runMasterSlaveExample.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/examples/runMasterSlaveExample.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="5" column="19" lean-forward="true" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
-              <folding>
-                <element signature="e#0#48#0" expanded="true" />
+                <element signature="e#0#56#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -115,34 +58,74 @@
       <file leaf-file-name="fineGrainedGaRunner.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="6" column="69" lean-forward="true" selection-start-line="6" selection-start-column="69" selection-end-line="6" selection-end-column="69" />
+            <state relative-caret-position="342">
+              <caret line="20" column="68" lean-forward="true" selection-start-line="20" selection-start-column="68" selection-end-line="20" selection-end-column="68" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="runCoarseGrainedExample.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/runCoarseGrainedExample.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="geneticGrainedBase.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="72">
+              <caret line="4" column="39" lean-forward="false" selection-start-line="4" selection-start-column="39" selection-end-line="4" selection-end-column="39" />
               <folding>
-                <element signature="e#0#33#0" expanded="true" />
+                <element signature="e#0#24#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="coarseGrainedGaRunner.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py">
+      <file leaf-file-name="coarseGrainedBase.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="4" column="25" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="25" />
+            <state relative-caret-position="180">
+              <caret line="16" column="37" lean-forward="true" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="geneticBase.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/geneticAlgorithms/geneticBase.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="180">
+              <caret line="10" column="30" lean-forward="false" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="30" />
               <folding>
-                <element signature="e#0#33#0" expanded="true" />
+                <element signature="e#0#12#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/algorithmRunners/__init__.py">
+      <file leaf-file-name="runFineGrainedExample.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/examples/runFineGrainedExample.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="72">
-              <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state relative-caret-position="324">
+              <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fineGrainedBase.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/geneticAlgorithms/fineGrainedBase.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="126">
+              <caret line="7" column="21" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="21" />
               <folding>
-                <element signature="e#0#56#0" expanded="true" />
+                <element signature="e#0#48#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -173,6 +156,7 @@
       <find>fuck</find>
       <find>self.fitness</find>
       <find>fitness</find>
+      <find>_fitnes</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/geneticAlgorithms</dir>
@@ -222,19 +206,19 @@
         <option value="$PROJECT_DIR$/../parallel_ga_processing/README.rst" />
         <option value="$PROJECT_DIR$/examples/runMasterSlaveExample.py" />
         <option value="$PROJECT_DIR$/algorithmRunners/masterSlaveGaRunner.py" />
-        <option value="$PROJECT_DIR$/geneticAlgorithms/masterSlaveBase.py" />
         <option value="$PROJECT_DIR$/setup.py" />
-        <option value="$PROJECT_DIR$/geneticAlgorithms/geneticBase.py" />
-        <option value="$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py" />
-        <option value="$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py" />
         <option value="$PROJECT_DIR$/algorithmRunners/grainedGaRunner.py" />
-        <option value="$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py" />
-        <option value="$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py" />
-        <option value="$PROJECT_DIR$/algorithmRunners/__init__.py" />
-        <option value="$PROJECT_DIR$/examples/runCoarseGrainedExample.py" />
         <option value="$PROJECT_DIR$/examples/runFineGrainedExample.py" />
         <option value="$PROJECT_DIR$/geneticAlgorithms/fineGrainedBase.py" />
+        <option value="$PROJECT_DIR$/geneticAlgorithms/masterSlaveBase.py" />
+        <option value="$PROJECT_DIR$/geneticAlgorithms/geneticBase.py" />
+        <option value="$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py" />
+        <option value="$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py" />
         <option value="$PROJECT_DIR$/tests/test_parallel.py" />
+        <option value="$PROJECT_DIR$/examples/runCoarseGrainedExample.py" />
+        <option value="$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py" />
+        <option value="$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py" />
+        <option value="$PROJECT_DIR$/algorithmRunners/__init__.py" />
       </list>
     </option>
   </component>
@@ -349,7 +333,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python tests.Unittests for test_parallel.TestParallel.testFineGrained">
+  <component name="RunManager" selected="Python tests.Unittests for test_parallel.TestParallel.testCoarseGrained">
     <configuration name="__init__ (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -506,10 +490,10 @@
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel.testFineGrained" />
-        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel.testCoarseGrained" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel.testMasterSlaveGrained" />
+        <item index="0" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel.testCoarseGrained" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel.testMasterSlaveGrained" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel.testFineGrained" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittests for test_parallel.TestParallel" />
         <item index="4" class="java.lang.String" itemvalue="Python.__init__ (1)" />
       </list>
     </recent_temporary>
@@ -531,35 +515,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_for_test_parallel_TestParallel - 2018.03.27 at 23h 12m 36s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.27 at 23h 10m 38s.xml">
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.27 at 23h 53m 19s.xml">
       <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testFineGrained - 2018.03.27 at 23h 10m 54s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testFineGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.27 at 23h 56m 03s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testFineGrained - 2018.03.27 at 23h 13m 37s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testFineGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.27 at 23h 56m 31s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testMasterSlaveGrained - 2018.03.27 at 21h 36m 42s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testMasterSlaveGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.27 at 23h 57m 09s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testMasterSlaveGrained - 2018.03.27 at 21h 37m 04s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testMasterSlaveGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.28 at 00h 00m 19s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testMasterSlaveGrained - 2018.03.27 at 21h 39m 40s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testMasterSlaveGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.28 at 00h 08m 28s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testMasterSlaveGrained - 2018.03.27 at 21h 41m 04s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testMasterSlaveGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.28 at 00h 12m 08s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testMasterSlaveGrained - 2018.03.27 at 22h 50m 17s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testMasterSlaveGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.28 at 00h 15m 38s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_for_test_parallel_TestParallel_testMasterSlaveGrained - 2018.03.27 at 22h 51m 26s.xml">
-      <configuration name="Unittests for test_parallel.TestParallel.testMasterSlaveGrained" configurationId="tests" />
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.28 at 00h 16m 14s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Unittests_for_test_parallel_TestParallel_testCoarseGrained - 2018.03.28 at 00h 23m 07s.xml">
+      <configuration name="Unittests for test_parallel.TestParallel.testCoarseGrained" configurationId="tests" />
     </history-entry>
   </component>
   <component name="ToolWindowManager">
@@ -568,10 +552,10 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26809865" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32908162" sideWeight="0.50278443" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32908162" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32908162" sideWeight="0.4972156" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
@@ -614,7 +598,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/main/masterSlave.py" />
     <entry file="file://$PROJECT_DIR$/main/coarseGrained.py" />
     <entry file="file://$PROJECT_DIR$/tests/__init__.py" />
     <entry file="file://$PROJECT_DIR$/../parallel_ga_processing/examples/masterSlave.py">
@@ -801,57 +784,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/masterSlave.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="38" lean-forward="true" selection-start-line="11" selection-start-column="38" selection-end-line="11" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#45#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="144">
           <caret line="8" column="0" lean-forward="true" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/setup.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/masterSlaveBase.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="17" column="50" lean-forward="true" selection-start-line="17" selection-start-column="50" selection-end-line="17" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-732">
-          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/geneticBase.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="11" lean-forward="true" selection-start-line="13" selection-start-column="11" selection-end-line="13" selection-end-column="11" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -863,50 +800,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/algorithmRunners/masterSlaveGaRunner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/examples/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="4" column="25" lean-forward="false" selection-start-line="4" selection-start-column="4" selection-end-line="4" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="6" column="69" lean-forward="true" selection-start-line="6" selection-start-column="69" selection-end-line="6" selection-end-column="69" />
-          <folding>
-            <element signature="e#0#33#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/algorithmRunners/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="72">
-          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#56#0" expanded="true" />
+            <element signature="e#0#35#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -916,35 +815,87 @@
         <state relative-caret-position="306">
           <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/masterSlave.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="11" column="38" lean-forward="true" selection-start-line="11" selection-start-column="38" selection-end-line="11" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" column="24" lean-forward="false" selection-start-line="9" selection-start-column="24" selection-end-line="9" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#59#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_parallel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="15" lean-forward="false" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/runMasterSlaveExample.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="19" lean-forward="true" selection-start-line="5" selection-start-column="19" selection-end-line="5" selection-end-column="19" />
+        <state relative-caret-position="270">
+          <caret line="16" column="16" lean-forward="false" selection-start-line="16" selection-start-column="16" selection-end-line="16" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/masterSlaveBase.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/geneticGrainedBase.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="4" column="39" lean-forward="false" selection-start-line="4" selection-start-column="39" selection-end-line="4" selection-end-column="39" />
           <folding>
-            <element signature="e#0#48#0" expanded="true" />
+            <element signature="e#0#24#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/examples/runCoarseGrainedExample.py">
+    <entry file="file://$PROJECT_DIR$/geneticAlgorithms/geneticBase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+        <state relative-caret-position="180">
+          <caret line="10" column="30" lean-forward="false" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="30" />
           <folding>
-            <element signature="e#0#50#0" expanded="true" />
+            <element signature="e#0#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/geneticAlgorithms/fineGrainedBase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        <state relative-caret-position="126">
+          <caret line="7" column="21" lean-forward="false" selection-start-line="7" selection-start-column="6" selection-end-line="7" selection-end-column="21" />
           <folding>
             <element signature="e#0#48#0" expanded="true" />
           </folding>
@@ -953,30 +904,60 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/geneticAlgorithms/coarseGrainedBase.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="181" column="0" lean-forward="true" selection-start-line="181" selection-start-column="0" selection-end-line="181" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#48#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_parallel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="34" lean-forward="true" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="180">
+          <caret line="16" column="37" lean-forward="true" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/examples/runFineGrainedExample.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="18" selection-end-column="90" />
+        <state relative-caret-position="324">
+          <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/runCoarseGrainedExample.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/algorithmRunners/masterSlaveGaRunner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="20" lean-forward="false" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/algorithmRunners/fineGrainedGaRunner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="20" column="68" lean-forward="true" selection-start-line="20" selection-start-column="68" selection-end-line="20" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/algorithmRunners/coarseGrainedGaRunner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="16" column="12" lean-forward="true" selection-start-line="16" selection-start-column="12" selection-end-line="16" selection-end-column="12" />
           <folding>
-            <element signature="e#0#48#0" expanded="true" />
+            <element signature="e#0#33#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/algorithmRunners/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#56#0" expanded="true" />
           </folding>
         </state>
       </provider>

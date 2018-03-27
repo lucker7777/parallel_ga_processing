@@ -8,7 +8,7 @@ class GeneticAlgorithmBase(object):
         self._population_size = population_size
         self._chromosome_size = chromosome_size
         self._number_of_generations = number_of_generations
-        self._fitness = fitness
+        self.fitness = fitness
 
     def initialize_population(self):
         """

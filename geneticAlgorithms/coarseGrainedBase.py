@@ -72,7 +72,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         # retrieve best fitness of population
         best_individual = None
         chromosomes_reproducing = {}
-        fit_values = [self._fitness(self._population[i]) for i in range(self._population_size)]
+        fit_values = [self.fitness(self._population[i]) for i in range(self._population_size)]
         fitness_max = max(fit_values)
         logger.info("fit values " + str(fit_values) + " max " + str(fitness_max))
         # choose individuals for reproduction based on probability

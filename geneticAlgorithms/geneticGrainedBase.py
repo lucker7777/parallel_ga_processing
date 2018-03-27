@@ -1,9 +1,8 @@
-import abc
 from scoop import logger
 from .geneticBase import GeneticAlgorithmBase
 
 
-class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase, metaclass=abc.ABCMeta):
+class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size, number_of_generations, fitness):
         super().__init__(population_size, chromosome_size,
                          number_of_generations, fitness)
@@ -20,33 +19,27 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase, metaclass=abc.ABCMeta):
         max_val = 0
         max_index = None
         for i in range(0, self._population_size):
-            curr_fit = self._fitness(population[i])
+            curr_fit = self.fitness(population[i])
             if curr_fit > max_val:
                 max_val = curr_fit
                 max_index = i
         return max_val, population[max_index]
 
-    @abc.abstractmethod
     def _start_MPI(self, channels):
         pass
 
-    @abc.abstractmethod
     def _process(self, chromosome):
         pass
 
-    @abc.abstractmethod
     def _send_data(self, data):
         pass
 
-    @abc.abstractmethod
     def _collect_data(self):
         pass
 
-    @abc.abstractmethod
     def _finish_processing(self, received_data, data):
         pass
 
-    @abc.abstractmethod
     def _stop_MPI(self):
         pass
 
