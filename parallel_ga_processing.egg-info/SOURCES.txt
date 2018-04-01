@@ -2,7 +2,8 @@ MANIFEST.in
 README.rst
 setup.py
 algorithmRunners/__init__.py
-algorithmRunners/grainedGaRunner.py
+algorithmRunners/coarseGrainedGaRunner.py
+algorithmRunners/fineGrainedGaRunner.py
 algorithmRunners/launcher.py
 algorithmRunners/masterSlaveGaRunner.py
 docs/doc.txt

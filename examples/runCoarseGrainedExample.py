@@ -16,4 +16,4 @@ def fitness(chromosome):
 if __name__ == '__main__':
     run_coarse_grained_ga(population_size=10, chromosome_size=4,
                           number_of_generations=100, num_of_neighbours=3,
-                          neighbourhood_size=3, server_ip_addr="127.0.0.1", fitness=lambda: fitness)
+                          neighbourhood_size=3, server_ip_addr="127.0.0.1", fitness=fitness)

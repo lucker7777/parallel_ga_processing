@@ -19,7 +19,7 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         max_val = 0
         max_index = None
         for i in range(0, self._population_size):
-            curr_fit = self.fitness(population[i])
+            curr_fit = self._fitness(population[i])
             if curr_fit > max_val:
                 max_val = curr_fit
                 max_index = i
