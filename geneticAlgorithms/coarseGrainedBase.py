@@ -5,7 +5,7 @@ import json
 import random
 import numpy
 from scoop import logger
-
+import numpy as np
 
 class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
@@ -136,22 +136,31 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
                                     routing_key=self._queue_to_produce,
                                     body=json.dumps(toSend))
 
+    @staticmethod
+    def q(mat, kx, ky):
+        print(kx)
+        print(ky)
+        print("FUCK")
+        return np.take(np.take(mat, kx, axis=0), ky, axis=1)
+
+    def neighbours(self, mat, row, col, rows, cols):
+        ix = np.arange(row -2, row + 2)
+        iy = np.arange(col -2, col + 2)
+
+        return self.q(mat, ix - 1, iy) + self.q(mat, ix + 1, iy) + self.q(mat, ix, iy - 1) + self.q(
+            mat, ix, iy + 1) - 4.0 * self.q(mat, ix, iy)
+
     def initialize_topology(self):
         channels_to_return = []
         quantity = self._population_size
         radius = self._neighbourhood_size
-        for x in range(quantity):
-            channels = [x]
-            for z in range(1, radius + 1):
-                if x + z > quantity - 1:
-                    channels.append(abs(quantity - (x + z)))
-                else:
-                    channels.append(x + z)
-                if x - z < 0:
-                    channels.append(abs((x - z) + quantity))
-                else:
-                    channels.append(x - z)
-            channels_to_return.append(channels)
+        mat = np.arange(100).reshape(10, 10)
+        print(mat)
+        for x in range(10):
+            for z in range(10):
+                channels = [mat[x][z]]
+                channels.append(self.neighbours(mat, x, z, 10, 10))
+                channels_to_return.append(channels)
         return channels_to_return
 
     def _collect_data(self):

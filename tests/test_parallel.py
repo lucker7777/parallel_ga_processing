@@ -1,7 +1,7 @@
 from unittest import TestCase
 from algorithmRunners import launch
 
-path = "/tmp/parallelGA/examples"
+path = "/home/martin/parallel_ga_processing/examples"
 
 
 class TestParallel(TestCase):
@@ -11,7 +11,7 @@ class TestParallel(TestCase):
 
     def testCoarseGrained(self):
         executable = "runCoarseGrainedExample.py"
-        launch(["localhost", "remote1@remote1-VirtualBox"], 10, path, executable)
+        launch(["localhost"], 10, path, executable)
 
     def testMasterSlaveGrained(self):
         executable = "runMasterSlaveExample.py"
