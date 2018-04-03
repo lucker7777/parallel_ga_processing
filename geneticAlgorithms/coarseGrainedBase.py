@@ -7,21 +7,24 @@ import numpy
 from scoop import logger
 import numpy as np
 
+
 class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
-                 num_of_neighbours, neighbourhood_size, fitness):
-        super().__init__(population_size, chromosome_size,
-                         number_of_generations, fitness)
+                 neighbourhood_size, fitness):
+
+        self._population_size_x, self._population_size_y = population_size
         self._channel = None
         self._queue_to_produce = None
         self._queues_to_consume = None
-        self._num_of_neighbours = num_of_neighbours
+        self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
         self._queue_name = None
         self._connection = None
         self._neighbourhood_size = neighbourhood_size
         self._population = []
         self._server_ip_addr = server_ip_addr
+        super().__init__(self._population_size_x * self._population_size_y, chromosome_size,
+                         number_of_generations, fitness)
 
     def initialize_population(self):
         populations = []
@@ -31,7 +34,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
 
     def _start_MPI(self, channels):
         queue_to_produce = str(channels.pop(0))
-        queues_to_consume = list(map(str, channels))
+        queues_to_consume = list(map(str, channels.pop(0)))
         logger.info("starting processing to queue: " + queue_to_produce
                     + " and consuming from: " + str(queues_to_consume))
         connection = pika.BlockingConnection(
@@ -137,29 +140,41 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
                                     body=json.dumps(toSend))
 
     @staticmethod
-    def q(mat, kx, ky):
-        print(kx)
-        print(ky)
-        print("FUCK")
-        return np.take(np.take(mat, kx, axis=0), ky, axis=1)
+    def neighbours(mat, row, col, rows, cols, radius):
+        current_element = mat[row][col]
+        row_shift = 0
+        col_shift = 0
+        if row - radius < 0:
+            row_shift = abs(row - radius)
+            mat = np.roll(mat, row_shift, axis=1)
+        elif row + radius >= rows:
+            row_shift = (rows - 1) - (row + radius)
+            mat = np.roll(mat, row_shift, axis=1)
 
-    def neighbours(self, mat, row, col, rows, cols):
-        ix = np.arange(row -2, row + 2)
-        iy = np.arange(col -2, col + 2)
+        if col - radius < 0:
+            col_shift = abs(col - radius)
+            mat = np.roll(mat, col_shift, axis=0)
+        elif col + radius >= cols:
+            col_shift = (cols - 1) - (col + radius)
+            mat = np.roll(mat, col_shift, axis=0)
 
-        return self.q(mat, ix - 1, iy) + self.q(mat, ix + 1, iy) + self.q(mat, ix, iy - 1) + self.q(
-            mat, ix, iy + 1) - 4.0 * self.q(mat, ix, iy)
+        kx = np.arange(row - radius + row_shift, row + radius + row_shift + 1)
+        ky = np.arange(col - radius + col_shift, col + radius + col_shift + 1)
+
+        channels = np.take(np.take(mat, ky, axis=1), kx, axis=0)
+        channels = channels.ravel()
+        channels = np.unique(channels)
+        return list(map(int, np.delete(channels, np.argwhere(channels == current_element))))
 
     def initialize_topology(self):
         channels_to_return = []
-        quantity = self._population_size
         radius = self._neighbourhood_size
-        mat = np.arange(100).reshape(10, 10)
-        print(mat)
-        for x in range(10):
-            for z in range(10):
-                channels = [mat[x][z]]
-                channels.append(self.neighbours(mat, x, z, 10, 10))
+        mat = np.arange(self._population_size).reshape(self._population_size_x,
+                                                       self._population_size_y)
+        for x in range(self._population_size_x):
+            for z in range(self._population_size_y):
+                channels = [int(mat[x][z]), self.neighbours(mat, x, z, self._population_size_x,
+                                                       self._population_size_y, radius)]
                 channels_to_return.append(channels)
         return channels_to_return
 
@@ -174,7 +189,6 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
 
                 fit_val = received.pop(0)
                 vector = list(map(int, received))
-                print("PARSED " + str(fit_val) + " " + str(vector))
                 neighbours.append_object(self._Snt(fit_val, vector))
                 self._channel.basic_ack(method_frame.delivery_tag)
 

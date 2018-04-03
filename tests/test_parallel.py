@@ -11,7 +11,7 @@ class TestParallel(TestCase):
 
     def testCoarseGrained(self):
         executable = "runCoarseGrainedExample.py"
-        launch(["localhost"], 10, path, executable)
+        launch(["localhost"], 15, path, executable)
 
     def testMasterSlaveGrained(self):
         executable = "runMasterSlaveExample.py"
