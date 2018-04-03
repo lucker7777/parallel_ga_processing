@@ -12,11 +12,12 @@ from .decorator import log_method
 class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
-                 neighbourhood_size, fitness):
+                 neighbourhood_size, num_of_migrants, fitness):
 
         super().__init__(population_size, chromosome_size,
                          number_of_generations, server_ip_addr,
                          neighbourhood_size, fitness)
+        self._num_of_migrants = num_of_migrants
 
     @log_method()
     def initialize_population(self):
@@ -29,7 +30,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def _process(self, population):
         self._population = population
         self._send_individuals_reproduce()
-        return self._find_solution(self._population)
+        return self._find_solution(self._population, self._num_of_migrants)
 
     @log_method()
     def _send_individuals_reproduce(self):
@@ -42,21 +43,20 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         # retrieve best fitness of population
         best_individual = None
         chromosomes_reproducing = {}
-        fit_values = [self._fitness(self._population[i]) for i in range(self._population_size)]
-        fitness_max = max(fit_values)
-        logger.info("fit values " + str(fit_values) + " max " + str(fitness_max))
+        evaluation_data, fitness_max = self._evaluate_population()
         # choose individuals for reproduction based on probability
-        for i in range(0, self._population_size):
+        for i in range(self._population_size):
+            chromosome_data = evaluation_data.objects[i]
             # best individual has 100% probability to reproduce
             # others probability is relative to his
             # weak individuals are replaced with new ones
-            prob = fit_values[i] / fitness_max
+            prob = chromosome_data.fit / fitness_max
             # retrieve best individual, others are randomly selected
             if int(prob) == 1 and best_individual is None:
                 logger.info("BEST")
-                best_individual = self._population[i]
+                best_individual = chromosome_data.chromosome
             elif numpy.random.choice([True, False], p=[prob, 1 - prob]):
-                chromosomes_reproducing[i] = self._population[i]
+                chromosomes_reproducing[i] = chromosome_data.chromosome
 
         # if none of individuals were selected
         # try it once again
@@ -98,14 +98,26 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         while len(self._population) != self._population_size:
             self._population.append(self._gen_individual())
 
+    def _evaluate_population(self):
+        evaluation_data = self._Collect()
+        max_fit = 0
+        for i in range(self._population_size):
+            fit_val = self._fitness(self._population[i])
+            evaluation_data.append_object(
+                self._Snt(fit_val, self._population[i]))
+            if fit_val > max_fit:
+                max_fit = fit_val
+        return evaluation_data, max_fit
+
     @log_method()
     def _send_data(self, data):
-        sol_fit, sol_vector = data
-        toSend = [sol_fit]
-        toSend.extend(list(map(float, sol_vector)))
+        data_to_send = []
+        for x in data:
+            data_to_send.append((float(x.fit), x.chromosome))
+
         self._channel.basic_publish(exchange='direct_logs',
                                     routing_key=self._queue_to_produce,
-                                    body=json.dumps(toSend))
+                                    body=json.dumps(data_to_send))
 
     @log_method()
     def _collect_data(self):
@@ -114,12 +126,10 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
             method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name),
                                                                        no_ack=False)
             if body:
-                received = list(map(float, json.loads(body)))
+                received = json.loads(body)
                 logger.info(self._queue_to_produce + " RECEIVED " + str(received))
 
-                fit_val = received.pop(0)
-                vector = list(map(int, received))
-                neighbours.append_object(self._Snt(fit_val, vector))
+                self._parse_received_data(neighbours, received)
                 self._channel.basic_ack(method_frame.delivery_tag)
 
             else:
@@ -127,9 +137,14 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         sorted_x = neighbours.sort_objects()
         return sorted_x.pop(0).chromosome
 
+    def _parse_received_data(self, neighbours, received):
+        for data in received:
+            fit_val, vector = data
+            neighbours.append_object(self._Snt(float(fit_val), list(map(int, vector))))
+
     @log_method()
     def _finish_processing(self, received_data, data):
         received_chromosome = list(map(int, received_data))
         random_chromosome = random.randint(0, len(self._population) - 1)
         self._population[random_chromosome] = received_chromosome
-        return self._find_solution(self._population)
+        return self._find_solution(self._population, self._num_of_migrants)

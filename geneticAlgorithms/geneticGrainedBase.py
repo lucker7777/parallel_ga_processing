@@ -26,20 +26,17 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         self._connection = None
 
     @log_method()
-    def _find_solution(self, population):
+    def _find_solution(self, population, num_of_best_chromosomes):
         """
         Find the best solution
         :param population
         :return: best_weight, chromosome
         """
-        max_val = 0
-        max_index = None
+        data = self._Collect()
         for i in range(0, self._population_size):
             curr_fit = self._fitness(population[i])
-            if curr_fit > max_val:
-                max_val = curr_fit
-                max_index = i
-        return max_val, population[max_index]
+            data.append_object(self._Snt(curr_fit, population[i]))
+        return data.sort_objects()[:num_of_best_chromosomes]
 
     @log_method()
     def _start_MPI(self, channels):
