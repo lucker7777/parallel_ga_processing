@@ -1,58 +1,51 @@
-from geneticAlgorithms import geneticGrainedBase
-import time
-import pika
-import json
+import random
 from scoop import logger
 from .decorator import log_method
+from geneticAlgorithms import geneticGrainedBase
+
 
 class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
-                 neighbourhood_size, fitness):
+                 neighbourhood_size, fitness, mate_best_neighbouring_individual=True):
 
         super().__init__(population_size, chromosome_size,
                          number_of_generations, server_ip_addr,
                          neighbourhood_size, fitness)
+        self._chromosome = None
+        self.mate_best_neighbouring_individual = mate_best_neighbouring_individual
 
     @log_method()
-    def _process(self, chromosome):
-        fit = self._fitness(chromosome)
+    def _store_initial_data(self, chromosome):
+        self._chromosome = chromosome
+
+    @log_method()
+    def _process(self):
+        fit = self._fitness(self._chromosome)
         to_send = [float(fit)]
-        to_send.extend(list(map(float, chromosome)))
+        to_send.extend(list(map(float, self._chromosome)))
         return to_send
 
-    @log_method()
-    def _send_data(self, data):
-        self._channel.basic_publish(exchange='direct_logs',
-                                    routing_key=self._queue_to_produce,
-                                    body=json.dumps(data))
+    def _parse_received_data(self, neighbours, received_data):
+        received = list(map(float, received_data))
+        fit_val = received.pop(0)
+        vector = list(map(int, received))
+        neighbours.append_object(self._Individual(fit_val, vector))
 
     @log_method()
-    def _collect_data(self):
-        neighbours = self._Collect()
-        while neighbours.size_of_col() != self._num_of_neighbours:
-            method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name),
-                                                                       no_ack=False)
-            if body:
-                received = list(map(float, json.loads(body)))
-                logger.info(self._queue_to_produce + " RECEIVED " + str(received))
+    def _finish_processing(self, neighbouring_chromosomes):
+        sorted_neighbouring_chromosomes = neighbouring_chromosomes.sort_objects()
+        if self.mate_best_neighbouring_individual:
+            self._mate_chromosomes_with_current(sorted_neighbouring_chromosomes.pop(0))
+        else:
+            # choose one random individual
+            self._mate_chromosomes_with_current(random.choice(sorted_neighbouring_chromosomes))
 
-                fit_val = received.pop(0)
-                vector = list(map(int, received))
-                print("PARSED " + str(fit_val) + " " + str(vector))
-                neighbours.append_object(self._Snt(fit_val, vector))
-                self._channel.basic_ack(method_frame.delivery_tag)
+        return self._fitness(self._chromosome), list(map(float, self._chromosome))
 
-            else:
-                logger.info(self._queue_to_produce + ' No message returned')
-        sorted_x = neighbours.sort_objects()
-        return sorted_x.pop(0).chromosome
-
-    @log_method()
-    def _finish_processing(self, chromosome, mother):
-        logger.info("father " + str(chromosome) + " mother " + str(mother))
-        mother.pop(0)
-        self._crossover(chromosome, mother)
+    def _mate_chromosomes_with_current(self, neighbouring_individual):
+        father = neighbouring_individual.chromosome
+        logger.info("father " + str(father) + " mother " + str(self._chromosome))
+        self._crossover(father, self._chromosome)
         # mother
-        self._mutation(chromosome)
-        return self._fitness(chromosome), list(map(float, chromosome))
+        self._mutation(self._chromosome)

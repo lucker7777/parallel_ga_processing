@@ -31,10 +31,10 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         best_individual = None
         chromosomes_reproducing = {}
         results = list(futures.map(self._fitness, self._population))
-        neighbours = self._Collect()
+        neighbours = self._Individuals()
         while neighbours.size_of_col() != self._population_size:
             fit_val, chromosome = results.pop(0)
-            neighbours.append_object(self._Snt(fit_val, chromosome))
+            neighbours.append_object(self._Individual(fit_val, chromosome))
         sorted_x = neighbours.sort_objects()
         fit_values = list(futures.map(self._fitness, self._population))
         best_chromosome = sorted_x.pop(0)
@@ -101,10 +101,10 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         :return: best_weight, chromosome
         """
         results = list(futures.map(self._fitness, population))
-        neighbours = self._Collect()
+        neighbours = self._Individuals()
         while neighbours.size_of_col() != self._population_size:
             fit_val, chromosome = results.pop(0)
-            neighbours.append_object(self._Snt(fit_val, chromosome))
+            neighbours.append_object(self._Individual(fit_val, chromosome))
         sorted_max = neighbours.sort_objects().pop(0)
         return sorted_max.fit, sorted_max.chromosome
 

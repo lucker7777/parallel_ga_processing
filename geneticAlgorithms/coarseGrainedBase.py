@@ -1,12 +1,7 @@
-from geneticAlgorithms import geneticGrainedBase
-import time
-import pika
-import json
 import random
-import numpy
 from scoop import logger
-import numpy as np
 from .decorator import log_method
+from geneticAlgorithms import geneticGrainedBase
 
 
 class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
@@ -18,19 +13,36 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
                          number_of_generations, server_ip_addr,
                          neighbourhood_size, fitness)
         self._num_of_migrants = num_of_migrants
+        self._population = None
 
     @log_method()
     def initialize_population(self):
+        """
+        Generate random populations for every deme
+        :returns array of binary chromosomes
+        """
         populations = []
         for i in range(0, self._population_size):
             populations.append(super().initialize_population())
         return populations
 
     @log_method()
-    def _process(self, population):
-        self._population = population
+    def _store_initial_data(self, initial_data):
+        self._population = initial_data
+
+    @log_method()
+    def _process(self):
+        """
+        Processes genetic algorithm
+        :param population
+        :returns best individual's data parsed in a way to send it
+        to neighbouring demes
+        """
         self._send_individuals_reproduce()
-        return self._find_solution(self._population, self._num_of_migrants)
+        data_to_send = []
+        for x in self._find_solution(self._population, self._num_of_migrants):
+            data_to_send.append((float(x.fit), x.chromosome))
+        return data_to_send
 
     @log_method()
     def _send_individuals_reproduce(self):
@@ -41,22 +53,11 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         """
 
         # retrieve best fitness of population
-        best_individual = None
-        chromosomes_reproducing = {}
-        evaluation_data, fitness_max = self._evaluate_population()
+        evaluation_data = self._evaluate_population()
         # choose individuals for reproduction based on probability
-        for i in range(self._population_size):
-            chromosome_data = evaluation_data.objects[i]
-            # best individual has 100% probability to reproduce
-            # others probability is relative to his
-            # weak individuals are replaced with new ones
-            prob = chromosome_data.fit / fitness_max
-            # retrieve best individual, others are randomly selected
-            if int(prob) == 1 and best_individual is None:
-                logger.info("BEST")
-                best_individual = chromosome_data.chromosome
-            elif numpy.random.choice([True, False], p=[prob, 1 - prob]):
-                chromosomes_reproducing[i] = chromosome_data.chromosome
+        chromosomes_reproducing = self._choose_individuals_based_on_fitness(
+            evaluation_data).sort_objects()
+        best_individual = chromosomes_reproducing.pop(0)
 
         # if none of individuals were selected
         # try it once again
@@ -70,22 +71,19 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         # put the best individual to the new population.
         # Otherwise, put him to individuals dedicated
         # for reproduction
-        logger.info(
-            "Actual popul is " + str(chromosomes_reproducing) + " with length " + str(
-                len(chromosomes_reproducing)))
-        logger.info("best indiv " + str(best_individual))
+
         if len(chromosomes_reproducing) % 2 == 0:
-            self._population.append(best_individual)
+            self._population.append(best_individual.chromosome)
         else:
             # put the best individual to max index in order to not rewrite existing
-            chromosomes_reproducing[self._population_size] = best_individual
+            chromosomes_reproducing.append(best_individual)
         # randomly choose pairs for crossover
         # then mutate new individuals and put them to new population
         while bool(chromosomes_reproducing):
-            father_index = random.choice(list(chromosomes_reproducing.keys()))
-            father = chromosomes_reproducing.pop(father_index)
-            mother_index = random.choice(list(chromosomes_reproducing.keys()))
-            mother = chromosomes_reproducing.pop(mother_index)
+            father = chromosomes_reproducing.pop(random.randrange(len(
+                chromosomes_reproducing))).chromosome
+            mother = chromosomes_reproducing.pop(random.randrange(len(
+                chromosomes_reproducing))).chromosome
             logger.info("father " + str(father) + " mother " + str(mother))
             self._crossover(father, mother)
             # mutate
@@ -99,52 +97,35 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
             self._population.append(self._gen_individual())
 
     def _evaluate_population(self):
-        evaluation_data = self._Collect()
-        max_fit = 0
+        """
+        Processes fitness function on every individual
+        :returns best individual
+        """
+        evaluation_data = self._Individuals()
         for i in range(self._population_size):
             fit_val = self._fitness(self._population[i])
             evaluation_data.append_object(
-                self._Snt(fit_val, self._population[i]))
-            if fit_val > max_fit:
-                max_fit = fit_val
-        return evaluation_data, max_fit
-
-    @log_method()
-    def _send_data(self, data):
-        data_to_send = []
-        for x in data:
-            data_to_send.append((float(x.fit), x.chromosome))
-
-        self._channel.basic_publish(exchange='direct_logs',
-                                    routing_key=self._queue_to_produce,
-                                    body=json.dumps(data_to_send))
-
-    @log_method()
-    def _collect_data(self):
-        neighbours = self._Collect()
-        while neighbours.size_of_col() != self._num_of_neighbours:
-            method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name),
-                                                                       no_ack=False)
-            if body:
-                received = json.loads(body)
-                logger.info(self._queue_to_produce + " RECEIVED " + str(received))
-
-                self._parse_received_data(neighbours, received)
-                self._channel.basic_ack(method_frame.delivery_tag)
-
-            else:
-                logger.info(self._queue_to_produce + ' No message returned')
-        sorted_x = neighbours.sort_objects()
-        return sorted_x.pop(0).chromosome
+                self._Individual(fit_val, self._population[i]))
+        return evaluation_data
 
     def _parse_received_data(self, neighbours, received):
         for data in received:
             fit_val, vector = data
-            neighbours.append_object(self._Snt(float(fit_val), list(map(int, vector))))
+            neighbours.append_object(self._Individual(float(fit_val), list(map(int, vector))))
 
     @log_method()
-    def _finish_processing(self, received_data, data):
-        received_chromosome = list(map(int, received_data))
-        random_chromosome = random.randint(0, len(self._population) - 1)
-        self._population[random_chromosome] = received_chromosome
+    def _finish_processing(self, neighbouring_individuals):
+        """
+        Select individuals for reproduction with probability
+        based on fitness value. Weak individuals are removed
+        and replaced with individuals from neighbouring demes.
+        :param neighbouring_individuals randomly chosen neighbouring individuals
+        """
+        for x in neighbouring_individuals.objects:
+            self._replace_old_individuals_with_new(x.chromosome)
         return self._find_solution(self._population, self._num_of_migrants)
+
+    def _replace_old_individuals_with_new(self, neighbouring_individual):
+        new_chromosome = list(map(int, neighbouring_individual))
+        random_old_chromosome = random.randint(0, len(self._population) - 1)
+        self._population[random_old_chromosome] = new_chromosome

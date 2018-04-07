@@ -1,9 +1,11 @@
-from scoop import logger
-from .geneticBase import GeneticAlgorithmBase
 import time
 import pika
+import json
 import numpy as np
+from scoop import logger
 from .decorator import log_method
+from .decorator import timeout
+from .geneticBase import GeneticAlgorithmBase
 
 
 class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
@@ -32,10 +34,10 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         :param population
         :return: best_weight, chromosome
         """
-        data = self._Collect()
+        data = self._Individuals()
         for i in range(0, self._population_size):
             curr_fit = self._fitness(population[i])
-            data.append_object(self._Snt(curr_fit, population[i]))
+            data.append_object(self._Individual(curr_fit, population[i]))
         return data.sort_objects()[:num_of_best_chromosomes]
 
     @log_method()
@@ -68,7 +70,7 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         time.sleep(5)
 
     @log_method()
-    def _process(self, chromosome):
+    def _process(self):
         pass
 
     @log_method()
@@ -80,8 +82,30 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         pass
 
     @log_method()
-    def _finish_processing(self, received_data, data):
+    def _finish_processing(self, received_data):
         pass
+
+    @log_method()
+    def _choose_individuals_based_on_fitness(self, evaluation_data):
+        fitness_max = evaluation_data.sort_objects().pop(0).fit
+        chromosomes_reproducing = self._Individuals()
+        best_individual = None
+
+        for chromosome_data in evaluation_data.objects:
+            # best individual has 100% probability to reproduce
+            # others probability is relative to his
+            # weak individuals are replaced with new ones
+            prob = chromosome_data.fit / fitness_max
+            # retrieve best individual, others are randomly selected
+            if int(prob) == 1 and best_individual is None:
+                logger.info("BEST")
+                best_individual = chromosome_data.chromosome
+                chromosomes_reproducing.append_object(self._Individual(chromosome_data.fit,
+                                                                       best_individual))
+            elif np.random.choice([True, False], p=[prob, 1 - prob]):
+                chromosomes_reproducing.append_object(self._Individual(chromosome_data.fit,
+                                                                       chromosome_data.chromosome))
+        return chromosomes_reproducing
 
     @log_method()
     def _stop_MPI(self):
@@ -127,15 +151,55 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
                 channels_to_return.append(channels)
         return channels_to_return
 
+    @log_method()
+    def _send_data(self, data):
+        """
+        Sends chosen individuals to neighbouring demes
+        """
+        self._channel.basic_publish(exchange='direct_logs',
+                                    routing_key=self._queue_to_produce,
+                                    body=json.dumps(data))
+
+    @log_method()
+    @timeout(60)
+    def _collect_data(self):
+        """
+        Collects individual's data from neighbouring demes
+        :returns best individual from neighbouring demes
+        """
+        neighbours = self._Individuals()
+        while neighbours.size_of_col() != self._num_of_neighbours:
+            method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name),
+                                                                       no_ack=False)
+            if body:
+                received = json.loads(body)
+                logger.info(self._queue_to_produce + " Received the data: " + str(received))
+
+                self._parse_received_data(neighbours, received)
+                self._channel.basic_ack(method_frame.delivery_tag)
+            else:
+                logger.info(self._queue_to_produce + ' No message returned')
+        return neighbours
+
+    @log_method()
+    def _parse_received_data(self, body, neighbours):
+        pass
+
+    @log_method()
+    def _store_initial_data(self, initial_data):
+        pass
+
     def __call__(self, initial_data, channels):
         to_return = []
-
+        self._store_initial_data(initial_data)
         logger.info("Process started with initial data " + str(initial_data) +
                     " and channels " + str(channels))
         self._start_MPI(channels)
         for i in range(0, self._number_of_generations):
-            data = self._process(initial_data)
+            data = self._process()
             self._send_data(data)
             received_data = self._collect_data()
-            to_return = self._finish_processing(received_data, data)
+            chosen_individuals_from_neighbours = self._choose_individuals_based_on_fitness(
+                received_data)
+            to_return = self._finish_processing(chosen_individuals_from_neighbours)
         return to_return

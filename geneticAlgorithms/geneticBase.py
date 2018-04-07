@@ -54,7 +54,7 @@ class GeneticAlgorithmBase(object):
             rnd = random.randint(0, self._chromosome_size - 1)
             chromosome[rnd] = abs(chromosome[rnd] - 1)
 
-    class _Collect(object):
+    class _Individuals(object):
         def __init__(self):
             self._objects = []
 
@@ -71,7 +71,7 @@ class GeneticAlgorithmBase(object):
         def size_of_col(self):
             return len(self._objects)
 
-    class _Snt(object):
+    class _Individual(object):
         def __init__(self, fit, chromosome):
             self._fit = fit
             self._chromosome = chromosome
