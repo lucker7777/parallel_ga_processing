@@ -1,2 +1,1 @@
-import geneticAlgorithms
-import algorithmRunners
+from . import parallel_ga_processing

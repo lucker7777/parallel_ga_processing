@@ -1,5 +1,5 @@
 from scoop import logger
-from geneticAlgorithms import MasterSlaveBase
+from parallel_ga_processing.geneticAlgorithms import MasterSlaveBase
 
 
 def run_master_slave_ga(population_size, chromosome_size,

@@ -1,4 +1,4 @@
-from geneticAlgorithms import MasterSlaveBase
+from parallel_ga_processing.geneticAlgorithms import MasterSlaveBase
 import math
 
 

@@ -1,4 +1,4 @@
-from geneticAlgorithms import geneticBase
+from parallel_ga_processing.geneticAlgorithms import geneticBase
 import random
 from scoop import logger, futures
 

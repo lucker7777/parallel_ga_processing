@@ -1,4 +1,4 @@
-from algorithmRunners import run_coarse_grained_ga
+from parallel_ga_processing.algorithmRunners import run_coarse_grained_ga
 import math
 
 

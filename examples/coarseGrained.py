@@ -1,5 +1,5 @@
 import math
-from geneticAlgorithms import coarseGrainedBase
+from parallel_ga_processing.geneticAlgorithms import coarseGrainedBase
 
 
 class CoarseGrained(coarseGrainedBase.CoarseGrainedBase):

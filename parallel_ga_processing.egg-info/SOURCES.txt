@@ -1,11 +1,6 @@
 MANIFEST.in
 README.rst
 setup.py
-algorithmRunners/__init__.py
-algorithmRunners/coarseGrainedGaRunner.py
-algorithmRunners/fineGrainedGaRunner.py
-algorithmRunners/launcher.py
-algorithmRunners/masterSlaveGaRunner.py
 docs/doc.txt
 examples/__init__.py
 examples/coarseGrained.py
@@ -14,13 +9,7 @@ examples/masterSlave.py
 examples/runCoarseGrainedExample.py
 examples/runFineGrainedExample.py
 examples/runMasterSlaveExample.py
-geneticAlgorithms/__init__.py
-geneticAlgorithms/coarseGrainedBase.py
-geneticAlgorithms/decorator.py
-geneticAlgorithms/fineGrainedBase.py
-geneticAlgorithms/geneticBase.py
-geneticAlgorithms/geneticGrainedBase.py
-geneticAlgorithms/masterSlaveBase.py
+parallel_ga_processing/__init__.py
 parallel_ga_processing.egg-info/PKG-INFO
 parallel_ga_processing.egg-info/SOURCES.txt
 parallel_ga_processing.egg-info/dependency_links.txt

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from algorithmRunners import launch
+from parallel_ga_processing.algorithmRunners import launch
 
 path = "/home/martin/parallel_ga_processing/examples"
 

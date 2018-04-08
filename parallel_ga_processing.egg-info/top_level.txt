@@ -1,3 +1,1 @@
-algorithmRunners
-examples
-geneticAlgorithms
+parallel_ga_processing

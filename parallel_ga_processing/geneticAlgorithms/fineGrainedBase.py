@@ -1,7 +1,7 @@
 import random
 from scoop import logger
 from .decorator import log_method
-from geneticAlgorithms import geneticGrainedBase
+from parallel_ga_processing.geneticAlgorithms import geneticGrainedBase
 
 
 class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):

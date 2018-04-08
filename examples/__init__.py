@@ -1,4 +1,4 @@
-from algorithmRunners import launch
+from parallel_ga_processing.algorithmRunners import launch
 import os
 
 if __name__ == '__main__':

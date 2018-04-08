@@ -12,15 +12,15 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
                  neighbourhood_size, fitness):
-        super().__init__(population_size, chromosome_size,
-                         number_of_generations, fitness)
+        super().__init__(population_size=self._population_size_x * self._population_size_y,
+                         chromosome_size=chromosome_size,
+                         number_of_generations=number_of_generations, fitness=fitness)
         self._population_size_x, self._population_size_y = population_size
         self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
         self._neighbourhood_size = neighbourhood_size
         self._check_population_size(self._population_size_x, self._neighbourhood_size)
         self._check_population_size(self._population_size_y, self._neighbourhood_size)
 
-        self._population_size = self._population_size_x * self._population_size_y
         self._chromosome_size = chromosome_size
         self._number_of_generations = number_of_generations
 
@@ -157,6 +157,8 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
                 self._parse_received_data(neighbours, received)
                 self._channel.basic_ack(method_frame.delivery_tag)
+            else:
+                time.sleep(1)
 
         return neighbours
 

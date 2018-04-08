@@ -1,5 +1,5 @@
 from scoop import futures, logger
-from geneticAlgorithms import CoarseGrainedBase
+from parallel_ga_processing.geneticAlgorithms import CoarseGrainedBase
 
 
 def run_coarse_grained_ga(population_size, chromosome_size,

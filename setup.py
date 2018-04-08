@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='parallel_ga_processing',
-    version='1.0.7',
-    packages=['examples', 'algorithmRunners', 'geneticAlgorithms'],
+    version='1.0.9',
+    packages=['parallel_ga_processing'],
     url='https://github.com/lucker7777/parallelGA',
     license='',
     install_requires=[

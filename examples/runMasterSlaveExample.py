@@ -1,4 +1,4 @@
-from algorithmRunners import run_master_slave_ga
+from parallel_ga_processing.algorithmRunners import run_master_slave_ga
 import math
 from scoop import logger
 
