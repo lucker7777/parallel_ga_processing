@@ -1,8 +1,10 @@
 from algorithmRunners import run_master_slave_ga
 import math
+from scoop import logger
 
 
 def fitness(chromosome):
+    logger.info("REMOTE")
     first_sum = 0.0
     second_sum = 0.0
     for c in chromosome:
