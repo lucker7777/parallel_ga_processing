@@ -7,11 +7,11 @@ path = "/home/martin/parallel_ga_processing/examples"
 class TestParallel(TestCase):
     def testFineGrained(self):
         executable = "runFineGrainedExample.py"
-        launch(["localhost"], 15, path, executable)
+        launch(["localhost"], 36, path, executable)
 
     def testCoarseGrained(self):
         executable = "runCoarseGrainedExample.py"
-        launch(["localhost"], 15, path, executable)
+        launch(["localhost"], 36, path, executable)
 
     def testMasterSlaveGrained(self):
         executable = "runMasterSlaveExample.py"

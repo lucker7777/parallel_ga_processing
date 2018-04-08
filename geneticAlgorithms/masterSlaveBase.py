@@ -1,8 +1,6 @@
 from geneticAlgorithms import geneticBase
 import random
-import numpy
 from scoop import logger, futures
-import abc
 
 
 class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
@@ -11,7 +9,7 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         super().__init__(population_size, chromosome_size, number_of_generations, fitness)
         self._population = self.initialize_population()
 
-    def _process(self, data):
+    def _process(self):
         """
         Exchange the random number of bits
         between father and mother
@@ -28,31 +26,15 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         """
 
         # retrieve best fitness of population
-        best_individual = None
-        chromosomes_reproducing = {}
         results = list(futures.map(self._fitness, self._population))
         neighbours = self._Individuals()
         while neighbours.size_of_col() != self._population_size:
             fit_val, chromosome = results.pop(0)
             neighbours.append_object(self._Individual(fit_val, chromosome))
-        sorted_x = neighbours.sort_objects()
-        fit_values = list(futures.map(self._fitness, self._population))
-        best_chromosome = sorted_x.pop(0)
-        fitness_max = best_chromosome.fit
-        best_individual = best_chromosome.chromosome
-        logger.info("fit values " + str(fit_values) + " max " + str(fitness_max))
-        # choose individuals for reproduction based on probability
-        for i in range(1, self._population_size):
-            # best individual has 100% probability to reproduce
-            # others probability is relative to his
-            # weak individuals are replaced with new ones
-            snt = sorted_x.pop(0)
-            prob = snt.fit / fitness_max
-            # retrieve best individual, others are randomly selected
-            if int(prob) == 1 and best_individual is None:
-                pass
-            elif numpy.random.choice([True, False], p=[prob, 1 - prob]):
-                chromosomes_reproducing[i] = snt.chromosome
+
+        chromosomes_reproducing = self._choose_individuals_based_on_fitness(
+            neighbours).sort_objects()
+        best_individual = chromosomes_reproducing.pop(0)
 
         # if none of individuals were selected
         # try it once again
@@ -71,17 +53,17 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
                 len(chromosomes_reproducing)))
         logger.info("best indiv " + str(best_individual))
         if len(chromosomes_reproducing) % 2 == 0:
-            self._population.append(best_individual)
+            self._population.append(best_individual.chromosome)
         else:
             # put the best individual to max index in order to not rewrite existing
-            chromosomes_reproducing[self._population_size] = best_individual
+            chromosomes_reproducing.append(best_individual)
         # randomly choose pairs for crossover
         # then mutate new individuals and put them to new population
         while bool(chromosomes_reproducing):
-            father_index = random.choice(list(chromosomes_reproducing.keys()))
-            father = chromosomes_reproducing.pop(father_index)
-            mother_index = random.choice(list(chromosomes_reproducing.keys()))
-            mother = chromosomes_reproducing.pop(mother_index)
+            father = chromosomes_reproducing.pop(random.randrange(len(
+                chromosomes_reproducing))).chromosome
+            mother = chromosomes_reproducing.pop(random.randrange(len(
+                chromosomes_reproducing))).chromosome
             logger.info("father " + str(father) + " mother " + str(mother))
             self._crossover(father, mother)
             # mutate
@@ -109,9 +91,9 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         return sorted_max.fit, sorted_max.chromosome
 
     def __call__(self):
-        toReturn = []
+        to_return = []
 
         logger.info("Process started")
         for i in range(0, self._number_of_generations):
-            toReturn = self._process(None)
-        return toReturn
+            to_return = self._process()
+        return to_return

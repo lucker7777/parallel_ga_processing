@@ -12,9 +12,11 @@ examples/coarseGrained.py
 examples/fineGrained.py
 examples/masterSlave.py
 examples/runCoarseGrainedExample.py
+examples/runFineGrainedExample.py
 examples/runMasterSlaveExample.py
 geneticAlgorithms/__init__.py
 geneticAlgorithms/coarseGrainedBase.py
+geneticAlgorithms/decorator.py
 geneticAlgorithms/fineGrainedBase.py
 geneticAlgorithms/geneticBase.py
 geneticAlgorithms/geneticGrainedBase.py

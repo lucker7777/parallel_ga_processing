@@ -15,17 +15,27 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         super().__init__(population_size, chromosome_size,
                          number_of_generations, fitness)
         self._population_size_x, self._population_size_y = population_size
+        self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
+        self._neighbourhood_size = neighbourhood_size
+        self._check_population_size(self._population_size_x, self._neighbourhood_size)
+        self._check_population_size(self._population_size_y, self._neighbourhood_size)
+
         self._population_size = self._population_size_x * self._population_size_y
         self._chromosome_size = chromosome_size
         self._number_of_generations = number_of_generations
-        self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
-        self._neighbourhood_size = neighbourhood_size
+
         self._server_ip_addr = server_ip_addr
         self._channel = None
         self._queue_to_produce = None
         self._queues_to_consume = None
         self._queue_name = None
         self._connection = None
+
+    @staticmethod
+    def _check_population_size(dimension_size, neighbourhood_size):
+        neighbourhood_diameter = ((neighbourhood_size * 2) + 1)
+        if dimension_size < neighbourhood_diameter * 2:
+            raise ValueError("Population size should be double the size of neighbourhood")
 
     @log_method()
     def _find_solution(self, population, num_of_best_chromosomes):
@@ -71,41 +81,11 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
     @log_method()
     def _process(self):
-        pass
-
-    @log_method()
-    def _send_data(self, data):
-        pass
-
-    @log_method()
-    def _collect_data(self):
-        pass
+        raise NotImplementedError
 
     @log_method()
     def _finish_processing(self, received_data):
-        pass
-
-    @log_method()
-    def _choose_individuals_based_on_fitness(self, evaluation_data):
-        fitness_max = evaluation_data.sort_objects().pop(0).fit
-        chromosomes_reproducing = self._Individuals()
-        best_individual = None
-
-        for chromosome_data in evaluation_data.objects:
-            # best individual has 100% probability to reproduce
-            # others probability is relative to his
-            # weak individuals are replaced with new ones
-            prob = chromosome_data.fit / fitness_max
-            # retrieve best individual, others are randomly selected
-            if int(prob) == 1 and best_individual is None:
-                logger.info("BEST")
-                best_individual = chromosome_data.chromosome
-                chromosomes_reproducing.append_object(self._Individual(chromosome_data.fit,
-                                                                       best_individual))
-            elif np.random.choice([True, False], p=[prob, 1 - prob]):
-                chromosomes_reproducing.append_object(self._Individual(chromosome_data.fit,
-                                                                       chromosome_data.chromosome))
-        return chromosomes_reproducing
+        raise NotImplementedError
 
     @log_method()
     def _stop_MPI(self):
@@ -183,11 +163,11 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
     @log_method()
     def _parse_received_data(self, body, neighbours):
-        pass
+        raise NotImplementedError
 
     @log_method()
     def _store_initial_data(self, initial_data):
-        pass
+        raise NotImplementedError
 
     def __call__(self, initial_data, channels):
         to_return = []
