@@ -28,8 +28,9 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         # retrieve best fitness of population
         results = list(futures.map(self._fitness, self._population))
         neighbours = self._Individuals()
-        while neighbours.size_of_col() != self._population_size:
-            fit_val, chromosome = results.pop(0)
+        for i in range(0, self._population_size):
+            fit_val = results.pop(0)
+            chromosome = self._population[i]
             neighbours.append_object(self._Individual(fit_val, chromosome))
 
         chromosomes_reproducing = self._choose_individuals_based_on_fitness(
@@ -84,9 +85,11 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         """
         results = list(futures.map(self._fitness, population))
         neighbours = self._Individuals()
-        while neighbours.size_of_col() != self._population_size:
-            fit_val, chromosome = results.pop(0)
+        for i in range(0, self._population_size):
+            fit_val = results.pop(0)
+            chromosome = self._population[i]
             neighbours.append_object(self._Individual(fit_val, chromosome))
+
         sorted_max = neighbours.sort_objects().pop(0)
         return sorted_max.fit, sorted_max.chromosome
 

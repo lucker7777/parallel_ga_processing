@@ -77,7 +77,7 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         self._queues_to_consume = queues_to_consume
         self._channel = channel
         self._connection = connection
-        time.sleep(5)
+        time.sleep(10)
 
     @log_method()
     def _process(self):
@@ -157,8 +157,7 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
                 self._parse_received_data(neighbours, received)
                 self._channel.basic_ack(method_frame.delivery_tag)
-            else:
-                logger.info(self._queue_to_produce + ' No message returned')
+
         return neighbours
 
     @log_method()
