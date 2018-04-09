@@ -6,16 +6,17 @@ from scoop import logger
 from .decorator import log_method
 from .decorator import timeout
 from .geneticBase import GeneticAlgorithmBase
-
+import random
 
 class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, server_ip_addr,
                  neighbourhood_size, fitness):
+
+        self._population_size_x, self._population_size_y = population_size
         super().__init__(population_size=self._population_size_x * self._population_size_y,
                          chromosome_size=chromosome_size,
                          number_of_generations=number_of_generations, fitness=fitness)
-        self._population_size_x, self._population_size_y = population_size
         self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
         self._neighbourhood_size = neighbourhood_size
         self._check_population_size(self._population_size_x, self._neighbourhood_size)
@@ -25,10 +26,8 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         self._number_of_generations = number_of_generations
 
         self._server_ip_addr = server_ip_addr
-        self._channel = None
-        self._queue_to_produce = None
-        self._queues_to_consume = None
-        self._queue_name = None
+        self._data_channel = None
+        self._confirmation_channel = None
         self._connection = None
 
     @staticmethod
@@ -61,22 +60,39 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
                                       credentials=pika.PlainCredentials("genetic1", "genetic1")))
 
         channel = connection.channel()
+        self._connection = connection
 
         channel.exchange_declare(exchange='direct_logs',
                                  exchange_type='direct')
         channel.basic_qos(prefetch_count=len(queues_to_consume))
 
         result = channel.queue_declare(exclusive=True)
-        self._queue_name = result.method.queue
+        queue_name = result.method.queue
 
         for queue in queues_to_consume:
             channel.queue_bind(exchange='direct_logs',
-                               queue=self._queue_name,
+                               queue=queue_name,
                                routing_key=queue)
-        self._queue_to_produce = queue_to_produce
-        self._queues_to_consume = queues_to_consume
-        self._channel = channel
-        self._connection = connection
+
+        self._data_channel = self._Channel(connection=connection, queue_name=queue_name
+                                           , channel=channel, exchange='direct_logs',
+                                           exchange_type='direct', routing_key=queue_to_produce)
+
+        confirmation_channel = connection.channel()
+
+        confirmation_channel.exchange_declare(exchange='confirmation',
+                                              exchange_type='fanout')
+
+        result = confirmation_channel.queue_declare(exclusive=True)
+        queue_name = result.method.queue
+        confirmation_channel.queue_bind(exchange='confirmation',
+                           queue=queue_name,
+                           routing_key='')
+
+        self._confirmation_channel = self._Channel(connection=connection, queue_name=queue_name
+                                                   , channel=confirmation_channel,
+                                                   exchange='confirmation',
+                                                   exchange_type='fanout', routing_key='')
         time.sleep(10)
 
     @log_method()
@@ -132,13 +148,13 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         return channels_to_return
 
     @log_method()
-    def _send_data(self, data):
+    def _send_data(self, channel, data):
         """
         Sends chosen individuals to neighbouring demes
         """
-        self._channel.basic_publish(exchange='direct_logs',
-                                    routing_key=self._queue_to_produce,
-                                    body=json.dumps(data))
+        channel.channel.basic_publish(exchange=channel.exchange,
+                                      routing_key=channel.routing_key,
+                                      body=json.dumps(data))
 
     @log_method()
     @timeout(60)
@@ -149,14 +165,16 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         """
         neighbours = self._Individuals()
         while neighbours.size_of_col() != self._num_of_neighbours:
-            method_frame, header_frame, body = self._channel.basic_get(queue=str(self._queue_name),
-                                                                       no_ack=False)
+            method_frame, header_frame, body = self._data_channel.channel.basic_get(queue=str(
+                self._data_channel.queue_name),
+                no_ack=False)
             if body:
                 received = json.loads(body)
-                logger.info(self._queue_to_produce + " Received the data: " + str(received))
+
+                # logger.info(self._queue_to_produce + " Received the data: " + str(received))
 
                 self._parse_received_data(neighbours, received)
-                self._channel.basic_ack(method_frame.delivery_tag)
+                self._data_channel.channel.basic_ack(method_frame.delivery_tag)
             else:
                 time.sleep(1)
 
@@ -170,17 +188,76 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
     def _store_initial_data(self, initial_data):
         raise NotImplementedError
 
+    @log_method()
+    @timeout(60)
+    def _synchronize_with_neighbours(self, generation):
+        self._send_data(self._confirmation_channel, str(generation))
+        cnt = 0
+        while cnt != self._population_size:
+            method_frame, header_frame, body = self._confirmation_channel.channel.basic_get(
+                queue=str(
+                    self._confirmation_channel.queue_name),
+                no_ack=False)
+            if body:
+                received = json.loads(body)
+
+                if str(received) != str(generation):
+                    continue
+                logger.info("curr " + str(cnt) + " needed " + str(self._population_size+1))
+
+                self._confirmation_channel.channel.basic_ack(method_frame.delivery_tag)
+                cnt = cnt + 1
+            else:
+                time.sleep(1)
+
     def __call__(self, initial_data, channels):
         to_return = []
         self._store_initial_data(initial_data)
         logger.info("Process started with initial data " + str(initial_data) +
                     " and channels " + str(channels))
         self._start_MPI(channels)
-        for i in range(0, self._number_of_generations):
+        for generation in range(0, self._number_of_generations):
+            logger.info("GENERATION " + str(generation))
             data = self._process()
-            self._send_data(data)
+            self._send_data(self._data_channel, data)
+            time.sleep(random.choice([0,5]))
             received_data = self._collect_data()
+            time.sleep(random.choice([0,5]))
+            self._synchronize_with_neighbours(generation)
             chosen_individuals_from_neighbours = self._choose_individuals_based_on_fitness(
                 received_data)
             to_return = self._finish_processing(chosen_individuals_from_neighbours)
         return to_return
+
+    class _Channel(object):
+        def __init__(self, connection, channel, queue_name, exchange, exchange_type, routing_key):
+            self._connection = connection
+            self._channel = channel
+            self._queue_name = queue_name
+            self._exchange = exchange
+            self._exchange_type = exchange_type
+            self._routing_key = routing_key
+
+        @property
+        def connection(self):
+            return self._connection
+
+        @property
+        def channel(self):
+            return self._channel
+
+        @property
+        def queue_name(self):
+            return self._queue_name
+
+        @property
+        def exchange(self):
+            return self._exchange
+
+        @property
+        def exchange_type(self):
+            return self._exchange_type
+
+        @property
+        def routing_key(self):
+            return self._routing_key

@@ -15,3 +15,15 @@ parallel_ga_processing.egg-info/SOURCES.txt
 parallel_ga_processing.egg-info/dependency_links.txt
 parallel_ga_processing.egg-info/requires.txt
 parallel_ga_processing.egg-info/top_level.txt
+parallel_ga_processing/algorithmRunners/__init__.py
+parallel_ga_processing/algorithmRunners/coarseGrainedGaRunner.py
+parallel_ga_processing/algorithmRunners/fineGrainedGaRunner.py
+parallel_ga_processing/algorithmRunners/launcher.py
+parallel_ga_processing/algorithmRunners/masterSlaveGaRunner.py
+parallel_ga_processing/geneticAlgorithms/__init__.py
+parallel_ga_processing/geneticAlgorithms/coarseGrainedBase.py
+parallel_ga_processing/geneticAlgorithms/decorator.py
+parallel_ga_processing/geneticAlgorithms/fineGrainedBase.py
+parallel_ga_processing/geneticAlgorithms/geneticBase.py
+parallel_ga_processing/geneticAlgorithms/geneticGrainedBase.py
+parallel_ga_processing/geneticAlgorithms/masterSlaveBase.py

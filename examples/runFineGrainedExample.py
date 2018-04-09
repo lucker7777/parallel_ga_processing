@@ -15,6 +15,6 @@ def fitness(chromosome):
 
 if __name__ == '__main__':
     run_fine_grained_ga(population_size=(6, 6), chromosome_size=4,
-                        number_of_generations=100,
+                        number_of_generations=30,
                         neighbourhood_size=1, server_ip_addr="127.0.0.1", fitness=fitness,
                         mate_best_neighbouring_individual=False)
