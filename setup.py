@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='parallel_ga_processing',
-    version='1.1.4',
+    version='1.2.1',
     packages=['parallel_ga_processing',
               'parallel_ga_processing.algorithmRunners',
               'parallel_ga_processing.geneticAlgorithms'],

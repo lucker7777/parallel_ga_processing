@@ -27,8 +27,7 @@ class GeneticAlgorithmBase(object):
         Generate binary array
         """
         return list(map(int,
-                        np.random.randint(
-                            2,
+                        np.random.randint(2,
                             size=self._chromosome_size)))
 
     @log_method()

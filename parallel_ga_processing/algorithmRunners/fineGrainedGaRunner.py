@@ -15,6 +15,7 @@ def run_fine_grained_ga(population_size, chromosome_size,
     channels = ins.initialize_topology()
     result = list(futures.map(ins, populations, channels))
     dct = {}
+
     logger.info("fuuu")
     while len(result):
         fitness_val, vector = result.pop(0)
