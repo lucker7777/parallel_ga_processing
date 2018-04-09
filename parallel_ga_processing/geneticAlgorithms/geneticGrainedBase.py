@@ -20,8 +20,8 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
                          number_of_generations=number_of_generations, fitness=fitness)
         self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
         self._neighbourhood_size = neighbourhood_size
-        #self._check_population_size(self._population_size_x, self._neighbourhood_size)
-        #self._check_population_size(self._population_size_y, self._neighbourhood_size)
+        # self._check_population_size(self._population_size_x, self._neighbourhood_size)
+        # self._check_population_size(self._population_size_y, self._neighbourhood_size)
 
         self._chromosome_size = chromosome_size
         self._number_of_generations = number_of_generations
@@ -30,6 +30,8 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         self._data_channel = None
         self._confirmation_channel = None
         self._connection = None
+
+        self._confirmation_routing_key = 'confirmation'
 
     @staticmethod
     def _check_population_size(dimension_size, neighbourhood_size):
@@ -66,7 +68,7 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
         channel.exchange_declare(exchange='direct_logs',
                                  exchange_type='direct')
-        #channel.basic_qos(prefetch_count=len(queues_to_consume))
+        # channel.basic_qos(prefetch_count=len(queues_to_consume))
 
         result = channel.queue_declare(exclusive=True)
         queue_name = result.method.queue
@@ -75,25 +77,18 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
                                queue=queue_name,
                                routing_key=queue)
 
+        channel.queue_bind(exchange='direct_logs',
+                           queue=queue_name,
+                           routing_key=self._confirmation_routing_key)
+
         self._data_channel = self._Channel(connection=connection, queue_name=queue_name
                                            , channel=channel, exchange='direct_logs',
                                            exchange_type='direct', routing_key=queue_to_produce)
 
-        confirmation_channel = connection.channel()
-        #confirmation_channel.basic_qos(prefetch_count=self._population_size)
-        confirmation_channel.exchange_declare(exchange='confirmation',
-                                              exchange_type='fanout')
-
-        result = confirmation_channel.queue_declare(exclusive=True)
-        queue_name = result.method.queue
-        confirmation_channel.queue_bind(exchange='confirmation',
-                           queue=queue_name,
-                           routing_key='')
-
         self._confirmation_channel = self._Channel(connection=connection, queue_name=queue_name
-                                                   , channel=confirmation_channel,
-                                                   exchange='confirmation',
-                                                   exchange_type='fanout', routing_key='')
+                                                   , channel=channel, exchange='direct_logs',
+                                                   exchange_type='direct',
+                                                   routing_key=self._confirmation_routing_key)
         time.sleep(5)
 
     @log_method()
@@ -159,25 +154,36 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
     @log_method()
     @timeout(60)
-    def _collect_data(self):
+    def _collect_data(self, generation):
         """
         Collects individual's data from neighbouring demes
         :returns best individual from neighbouring demes
         """
+        cnt_neighbour_ack = 0
         neighbours = self._Individuals()
-        while neighbours.size_of_col() != self._num_of_neighbours:
+        confirmation_sent = False
+        while neighbours.size_of_col() != self._num_of_neighbours\
+                and cnt_neighbour_ack != self._population_size:
             method_frame, header_frame, body = self._data_channel.channel.basic_get(queue=str(
                 self._data_channel.queue_name),
                 no_ack=True)
             if body:
                 received = json.loads(body)
-
+                logger.info("RECEIVED " + str(received) + " expect " + str(generation))
+                if isinstance(received, int):
+                    if received == generation:
+                        cnt_neighbour_ack = cnt_neighbour_ack + 1
+                        continue
+                    else:
+                        continue
                 # logger.info(self._queue_to_produce + " Received the data: " + str(received))
                 self._parse_received_data(neighbours, received)
-                #self._data_channel.channel.basic_ack(method_frame.delivery_tag)
+                # self._data_channel.channel.basic_ack(method_frame.delivery_tag)
             else:
                 time.sleep(0.2)
-
+            if neighbours.size_of_col() == self._num_of_neighbours and not confirmation_sent:
+                self._send_data(self._confirmation_channel, generation)
+                confirmation_sent = True
         return neighbours
 
     @log_method()
@@ -205,12 +211,11 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
                     continue
                 logger.info("curr " + str(cnt) + " needed " + str(self._population_size))
 
-                #self._confirmation_channel.channel.basic_ack(method_frame.delivery_tag)
+                # self._confirmation_channel.channel.basic_ack(method_frame.delivery_tag)
                 cnt = cnt + 1
             else:
                 logger.info("Not received")
                 time.sleep(0.2)
-
 
     def __call__(self, initial_data, channels):
         to_return = []
@@ -225,8 +230,8 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
             logger.info("GENERATION " + str(generation))
             data = self._process()
             self._send_data(self._data_channel, data)
-            received_data = self._collect_data()
-            self._synchronize_with_neighbours(generation)
+            received_data = self._collect_data(generation)
+            #self._synchronize_with_neighbours(generation)
             chosen_individuals_from_neighbours = self._choose_individuals_based_on_fitness(
                 received_data)
             to_return = self._finish_processing(chosen_individuals_from_neighbours)
