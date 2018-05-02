@@ -1,6 +1,7 @@
 from parallel_ga_processing.geneticAlgorithms import geneticBase
 import random
 from scoop import logger, futures
+from .decorator import log_method
 
 
 class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
@@ -9,6 +10,7 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         super().__init__(population_size, chromosome_size, number_of_generations, fitness)
         self._population = self.initialize_population()
 
+    @log_method()
     def _process(self):
         """
         Exchange the random number of bits
@@ -18,6 +20,7 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         self._send_individuals_reproduce()
         return self._find_solution(self._population)
 
+    @log_method()
     def _send_individuals_reproduce(self):
         """
         Select individuals for reproduction with probability
@@ -33,26 +36,29 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
             chromosome = self._population[i]
             neighbours.append_object(self._Individual(fit_val, chromosome))
 
-        chromosomes_reproducing = self._choose_individuals_based_on_fitness(
-            neighbours).sort_objects()
-        best_individual = chromosomes_reproducing.pop(0)
+        chosen_individuals = self._choose_individuals_based_on_fitness(
+            neighbours)
+        chromosomes_reproducing = chosen_individuals.sort_objects()
+        best_individual = chosen_individuals.best_individual
 
-        # if none of individuals were selected
-        # try it once again
-        if len(chromosomes_reproducing) == 0:
+        # it is sure that this is the right result
+        # but the algorithm needs to continue because of other demes
+        if best_individual is not None:
+            while len(self._population) <= self._population_size:
+                self._population.append(best_individual.chromosome)
             return
+
+        best_individual = chromosomes_reproducing.pop(0)
         # remove old population
         del self._population[:]
-
+        logger.info("Number of individuals chosen for reproduction is " +
+                    str(len(chromosomes_reproducing))+ " while best individuals has fitness "+
+                    str(best_individual.fit))
         # Reproducing requires two individuals.
         # If number of selected individuals is even
         # put the best individual to the new population.
         # Otherwise, put him to individuals dedicated
         # for reproduction
-        logger.info(
-            "Actual popul is " + str(chromosomes_reproducing) + " with length " + str(
-                len(chromosomes_reproducing)))
-        logger.info("best indiv " + str(best_individual))
         if len(chromosomes_reproducing) % 2 == 0:
             self._population.append(best_individual.chromosome)
         else:
@@ -60,12 +66,11 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
             chromosomes_reproducing.append(best_individual)
         # randomly choose pairs for crossover
         # then mutate new individuals and put them to new population
-        while bool(chromosomes_reproducing):
+        while len(chromosomes_reproducing) >= 2:
             father = chromosomes_reproducing.pop(random.randrange(len(
                 chromosomes_reproducing))).chromosome
             mother = chromosomes_reproducing.pop(random.randrange(len(
                 chromosomes_reproducing))).chromosome
-            logger.info("father " + str(father) + " mother " + str(mother))
             self._crossover(father, mother)
             # mutate
             self._mutation(father)
@@ -77,6 +82,7 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
         while len(self._population) != self._population_size:
             self._population.append(self._gen_individual())
 
+    @log_method()
     def _find_solution(self, population):
         """
         Find the best solution
@@ -98,5 +104,6 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
 
         logger.info("Process started")
         for i in range(0, self._number_of_generations):
+            logger.info("GENERATION " + str(i))
             to_return = self._process()
         return to_return

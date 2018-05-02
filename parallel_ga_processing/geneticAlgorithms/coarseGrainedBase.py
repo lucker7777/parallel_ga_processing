@@ -6,12 +6,15 @@ from parallel_ga_processing.geneticAlgorithms import geneticGrainedBase
 
 class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
-                 number_of_generations, server_ip_addr,
-                 neighbourhood_size, num_of_migrants, fitness):
-
+                 number_of_generations,
+                 neighbourhood_size, server_ip_addr, server_user,
+                 server_password, num_of_migrants,
+                 fitness):
         super().__init__(population_size, chromosome_size,
-                         number_of_generations, server_ip_addr,
-                         neighbourhood_size, fitness)
+                         number_of_generations,
+                         neighbourhood_size, server_ip_addr, server_user,
+                         server_password,
+                         fitness)
         self._num_of_migrants = num_of_migrants
         self._population = None
 
@@ -30,7 +33,6 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def _store_initial_data(self, initial_data):
         self._population = initial_data
 
-    @log_method()
     def _process(self):
         """
         Processes genetic algorithm
@@ -55,17 +57,23 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         # retrieve best fitness of population
         evaluation_data = self._evaluate_population()
         # choose individuals for reproduction based on probability
-        chromosomes_reproducing = self._choose_individuals_based_on_fitness(
-            evaluation_data).sort_objects()
-        best_individual = chromosomes_reproducing.pop(0)
+        chosen_individuals = self._choose_individuals_based_on_fitness(
+            evaluation_data)
+        chromosomes_reproducing = chosen_individuals.sort_objects()
+        best_individual = chosen_individuals.best_individual
 
-        # if none of individuals were selected
-        # try it once again
-        if len(chromosomes_reproducing) is 0:
+        # it is sure that this is the right result
+        # but the algorithm needs to continue because of other demes
+        if best_individual is not None:
+            logger.info("Ultimate best individual was found.")
+            while len(self._population) <= self._population_size:
+                self._population.append(best_individual.chromosome)
             return
+        else:
+            best_individual = chromosomes_reproducing.pop(0)
+
         # remove old population
         del self._population[:]
-
         # Reproducing requires two individuals.
         # If number of selected individuals is even
         # put the best individual to the new population.
@@ -77,23 +85,25 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         else:
             # put the best individual to max index in order to not rewrite existing
             chromosomes_reproducing.append(best_individual)
+        logger.info(
+            "Number of individuals chosen for reproduction is " + str(len(chromosomes_reproducing)))
         # randomly choose pairs for crossover
         # then mutate new individuals and put them to new population
-        while bool(chromosomes_reproducing):
+        while len(chromosomes_reproducing) >= 2:
             father = chromosomes_reproducing.pop(random.randrange(len(
                 chromosomes_reproducing))).chromosome
             mother = chromosomes_reproducing.pop(random.randrange(len(
                 chromosomes_reproducing))).chromosome
-            logger.info("father " + str(father) + " mother " + str(mother))
+
             self._crossover(father, mother)
-            # mutate
             self._mutation(father)
             self._mutation(mother)
+
             self._population.append(father)
             self._population.append(mother)
 
         # Generate new individuals in order to make new population the same size
-        while len(self._population) != self._population_size:
+        while len(self._population) <= self._population_size:
             self._population.append(self._gen_individual())
 
     def _evaluate_population(self):
@@ -108,12 +118,20 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
                 self._Individual(fit_val, self._population[i]))
         return evaluation_data
 
-    def _parse_received_data(self, neighbours, received):
+    def _check_collected_data(self, neighbours):
+        if len(neighbours.objects) >= self._num_of_neighbours:
+            for x in neighbours.objects.keys():
+                if neighbours.size_of_col(x) < self._num_of_migrants:
+                    return False
+            return True
+        return False
+
+    def _parse_received_data(self, neighbours, source, received):
         for data in received:
             fit_val, vector = data
-            neighbours.append_object(self._Individual(float(fit_val), list(map(int, vector))))
+            neighbours.append_object(self._Individual(float(fit_val), list(map(int, vector))),
+                                     source=source)
 
-    @log_method()
     def _finish_processing(self, neighbouring_individuals):
         """
         Select individuals for reproduction with probability
@@ -121,9 +139,9 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         and replaced with individuals from neighbouring demes.
         :param neighbouring_individuals randomly chosen neighbouring individuals
         """
-        for x in neighbouring_individuals.objects:
+        for x in neighbouring_individuals.individuals:
             self._replace_old_individuals_with_new(x.chromosome)
-        return self._find_solution(self._population, self._num_of_migrants)
+        return self._find_solution(self._population, 1)
 
     def _replace_old_individuals_with_new(self, neighbouring_individual):
         new_chromosome = list(map(int, neighbouring_individual))

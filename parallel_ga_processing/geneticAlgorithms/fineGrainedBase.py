@@ -6,12 +6,13 @@ from parallel_ga_processing.geneticAlgorithms import geneticGrainedBase
 
 class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
-                 number_of_generations, server_ip_addr,
+                 number_of_generations, server_ip_addr, server_user, server_password,
                  neighbourhood_size, fitness, mate_best_neighbouring_individual=True):
 
         super().__init__(population_size, chromosome_size,
-                         number_of_generations, server_ip_addr,
-                         neighbourhood_size, fitness)
+                         number_of_generations, neighbourhood_size, server_ip_addr, server_user,
+                         server_password,
+                         fitness)
         self._chromosome = None
         self.mate_best_neighbouring_individual = mate_best_neighbouring_individual
 
@@ -26,20 +27,35 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         to_send.extend(list(map(float, self._chromosome)))
         return to_send
 
-    def _parse_received_data(self, neighbours, received_data):
+    def _check_collected_data(self, neighbours):
+
+        for x in self._queues_to_consume:
+            if neighbours.size_of_col(x) != 1:
+                return False
+        return True
+
+    def _parse_received_data(self, neighbours, source, received_data):
         received = list(map(float, received_data))
         fit_val = received.pop(0)
         vector = list(map(int, received))
-        neighbours.append_object(self._Individual(fit_val, vector))
+        neighbours.append_object(self._Individual(fit_val, vector), source)
 
     @log_method()
     def _finish_processing(self, neighbouring_chromosomes):
-        sorted_neighbouring_chromosomes = neighbouring_chromosomes.sort_objects()
+        best_individual = neighbouring_chromosomes.best_individual
+        if len(neighbouring_chromosomes.individuals) == 1 and best_individual is not None:
+            return best_individual.fit, best_individual.chromosome
+
+        chromosomes = neighbouring_chromosomes.sort_objects()
+        if len(chromosomes) < 1:
+            logger.warning("No individuals were chosen from other neighbours."+
+                           "Maybe it is the fitness function that is wrong.")
+            chromosomes = [self._gen_individual()]
         if self.mate_best_neighbouring_individual:
-            self._mate_chromosomes_with_current(sorted_neighbouring_chromosomes.pop(0))
+            self._mate_chromosomes_with_current(chromosomes.pop(0))
         else:
             # choose one random individual
-            self._mate_chromosomes_with_current(random.choice(sorted_neighbouring_chromosomes))
+            self._mate_chromosomes_with_current(random.choice(chromosomes))
 
         return self._fitness(self._chromosome), list(map(float, self._chromosome))
 

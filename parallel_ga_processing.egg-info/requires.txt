@@ -1,3 +1,4 @@
+jsonpickle
 numpy
 pika
 scoop

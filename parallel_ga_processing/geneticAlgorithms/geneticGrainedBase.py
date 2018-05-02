@@ -1,19 +1,21 @@
+import uuid
 import time
-import pika
-import json
 import numpy as np
 from scoop import logger
 from .decorator import log_method
 from .decorator import timeout
 from .geneticBase import GeneticAlgorithmBase
-import random
+from enum import Enum
+from .messenger import Messenger
+from .messenger import ProductionQueue
 
 
 class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
-                 number_of_generations, server_ip_addr,
-                 neighbourhood_size, fitness):
-
+                 number_of_generations,
+                 neighbourhood_size, server_ip_addr, server_user,
+                 server_password,
+                 fitness):
         self._population_size_x, self._population_size_y = population_size
         super().__init__(population_size=self._population_size_x * self._population_size_y,
                          chromosome_size=chromosome_size,
@@ -30,8 +32,13 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         self._data_channel = None
         self._confirmation_channel = None
         self._connection = None
+        self._server_user = server_user
+        self._server_password = server_password
+        self._producing_queue = ProductionQueue()
+        self._data_consuming_queue = ProductionQueue()
 
-        self._confirmation_routing_key = 'confirmation'
+        self._queues_to_consume = None
+        self._queue_to_produce = None
 
     @staticmethod
     def _check_population_size(dimension_size, neighbourhood_size):
@@ -54,42 +61,21 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
     @log_method()
     def _start_MPI(self, channels):
-        queue_to_produce = str(channels.pop(0))
-        queues_to_consume = list(map(str, channels.pop(0)))
-        logger.info("starting processing to queue: " + queue_to_produce
-                    + " and consuming from: " + str(queues_to_consume))
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self._server_ip_addr, heartbeat=600,
-                                      blocked_connection_timeout=300,
-                                      credentials=pika.PlainCredentials("genetic1", "genetic1")))
-
-        channel = connection.channel()
-        self._connection = connection
-
-        channel.exchange_declare(exchange='direct_logs',
-                                 exchange_type='direct')
-        # channel.basic_qos(prefetch_count=len(queues_to_consume))
-
-        result = channel.queue_declare(exclusive=True)
-        queue_name = result.method.queue
-        for queue in queues_to_consume:
-            channel.queue_bind(exchange='direct_logs',
-                               queue=queue_name,
-                               routing_key=queue)
-
-        channel.queue_bind(exchange='direct_logs',
-                           queue=queue_name,
-                           routing_key=self._confirmation_routing_key)
-
-        self._data_channel = self._Channel(connection=connection, queue_name=queue_name
-                                           , channel=channel, exchange='direct_logs',
-                                           exchange_type='direct', routing_key=queue_to_produce)
-
-        self._confirmation_channel = self._Channel(connection=connection, queue_name=queue_name
-                                                   , channel=channel, exchange='direct_logs',
-                                                   exchange_type='direct',
-                                                   routing_key=self._confirmation_routing_key)
-        time.sleep(5)
+        self._queue_to_produce = str(channels.pop(0))
+        self._queues_to_consume = list(map(str, channels.pop(0)))
+        logger.info("starting processing to queue: " + self._queue_to_produce
+                    + " and consuming from: " + str(self._queues_to_consume))
+        msg = Messenger(server_user=self._server_user, server_password=self._server_password,
+                        server_ip_addr=self._server_ip_addr,
+                        exchange="data",
+                        exchange_type="direct",
+                        queue=str(uuid.uuid4()),
+                        subscription_routing_keys=list(self._queues_to_consume),
+                        produced_messages=self._producing_queue,
+                        consumed_messages=self._data_consuming_queue)
+        self._messenger = msg
+        self._messenger.start()
+        time.sleep(1)
 
     @log_method()
     def _process(self):
@@ -101,7 +87,7 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
 
     @log_method()
     def _stop_MPI(self):
-        self._connection.close()
+        self._messenger.stop_consuming()
 
     @staticmethod
     def _neighbours(mat, row, col, rows, cols, radius):
@@ -136,105 +122,72 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         radius = self._neighbourhood_size
         mat = np.arange(self._population_size).reshape(self._population_size_x,
                                                        self._population_size_y)
+        logger.info(str(mat))
         for x in range(self._population_size_x):
             for z in range(self._population_size_y):
                 channels = [int(mat[x][z]), self._neighbours(mat, x, z, self._population_size_x,
                                                              self._population_size_y, radius)]
                 channels_to_return.append(channels)
+        logger.info(str(channels_to_return))
         return channels_to_return
 
     @log_method()
-    def _send_data(self, channel, data):
-        """
-        Sends chosen individuals to neighbouring demes
-        """
-        channel.channel.basic_publish(exchange=channel.exchange,
-                                      routing_key=channel.routing_key,
-                                      body=json.dumps(data))
-
-    @log_method()
-    @timeout(60)
-    def _collect_data(self, generation):
+    def _collect_data(self, current_generation):
         """
         Collects individual's data from neighbouring demes
         :returns best individual from neighbouring demes
         """
-        cnt_neighbour_ack = 0
         neighbours = self._Individuals()
-        confirmation_sent = False
-        while neighbours.size_of_col() != self._num_of_neighbours\
-                and cnt_neighbour_ack != self._population_size:
-            method_frame, header_frame, body = self._data_channel.channel.basic_get(queue=str(
-                self._data_channel.queue_name),
-                no_ack=True)
-            if body:
-                received = json.loads(body)
-                logger.info("RECEIVED " + str(received) + " expect " + str(generation))
-                if isinstance(received, int):
-                    if received == generation:
-                        cnt_neighbour_ack = cnt_neighbour_ack + 1
-                        continue
-                    else:
-                        continue
-                # logger.info(self._queue_to_produce + " Received the data: " + str(received))
-                self._parse_received_data(neighbours, received)
-                # self._data_channel.channel.basic_ack(method_frame.delivery_tag)
-            else:
-                time.sleep(0.2)
-            if neighbours.size_of_col() == self._num_of_neighbours and not confirmation_sent:
-                self._send_data(self._confirmation_channel, generation)
-                confirmation_sent = True
+        while True:
+
+            if self._check_collected_data(neighbours):
+                break
+            if not self._data_consuming_queue.is_ready(current_generation):
+                continue
+            data = self._data_consuming_queue.consume_message(current_generation)
+            if current_generation != data.generation:
+                continue
+
+            self._parse_received_data(neighbours, int(data.source), data.data)
+
+            logger.info("RECEIVED data" + str(data.data) + str(data.source))
+
         return neighbours
 
-    @log_method()
-    def _parse_received_data(self, body, neighbours):
+    def _send_data(self, data, generation):
+        self._producing_queue.add_message(generation, Data(generation,
+                                                           self._queue_to_produce,
+                                                           self._queue_to_produce, data))
+
+    def _check_collected_data(self, neighbours):
         raise NotImplementedError
+
+    @log_method()
+    def _parse_received_data(self, neighbours, source, body):
+        raise NotImplementedError
+
+    def _parse_confirmation_data(self, neighbours, source, received_data):
+        neighbours.append_object(self._Individual(fit=None, chromosome=None, value=received_data),
+                                 source)
 
     @log_method()
     def _store_initial_data(self, initial_data):
         raise NotImplementedError
 
-    @log_method()
-    @timeout(60)
-    def _synchronize_with_neighbours(self, generation):
-        self._send_data(self._confirmation_channel, str(generation))
-        cnt = 0
-        while cnt != self._population_size:
-            method_frame, header_frame, body = self._confirmation_channel.channel.basic_get(
-                queue=str(
-                    self._confirmation_channel.queue_name),
-                no_ack=True)
-            if body:
-                received = json.loads(body)
-                logger.info("Received " + str(body))
-                if str(received) != str(generation):
-                    continue
-                logger.info("curr " + str(cnt) + " needed " + str(self._population_size))
-
-                # self._confirmation_channel.channel.basic_ack(method_frame.delivery_tag)
-                cnt = cnt + 1
-            else:
-                logger.info("Not received")
-                time.sleep(0.2)
-
     def __call__(self, initial_data, channels):
         to_return = []
         self._store_initial_data(initial_data)
-        logger.info("Process started with initial data " + str(initial_data) +
-                    " and channels " + str(channels))
-
         self._start_MPI(channels)
-
         for generation in range(0, self._number_of_generations):
-            logger.info("NUM " + str(self._number_of_generations))
             logger.info("GENERATION " + str(generation))
             data = self._process()
-            self._send_data(self._data_channel, data)
+            self._send_data(data, generation)
+
             received_data = self._collect_data(generation)
-            #self._synchronize_with_neighbours(generation)
             chosen_individuals_from_neighbours = self._choose_individuals_based_on_fitness(
                 received_data)
             to_return = self._finish_processing(chosen_individuals_from_neighbours)
+        self._stop_MPI()
         return to_return
 
     class _Channel(object):
@@ -269,3 +222,27 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         @property
         def routing_key(self):
             return self._routing_key
+
+
+class Data(object):
+    def __init__(self, generation, source, routing_key, data):
+        self._generation = generation
+        self._source = source
+        self._routing_key = routing_key
+        self._data = data
+
+    @property
+    def generation(self):
+        return self._generation
+
+    @property
+    def source(self):
+        return self._source
+
+    @property
+    def routing_key(self):
+        return self._routing_key
+
+    @property
+    def data(self):
+        return self._data

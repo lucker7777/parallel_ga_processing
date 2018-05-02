@@ -27,3 +27,4 @@ parallel_ga_processing/geneticAlgorithms/fineGrainedBase.py
 parallel_ga_processing/geneticAlgorithms/geneticBase.py
 parallel_ga_processing/geneticAlgorithms/geneticGrainedBase.py
 parallel_ga_processing/geneticAlgorithms/masterSlaveBase.py
+parallel_ga_processing/geneticAlgorithms/messenger.py
