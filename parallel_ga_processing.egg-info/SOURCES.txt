@@ -21,6 +21,7 @@ parallel_ga_processing/algorithmRunners/fineGrainedGaRunner.py
 parallel_ga_processing/algorithmRunners/launcher.py
 parallel_ga_processing/algorithmRunners/masterSlaveGaRunner.py
 parallel_ga_processing/geneticAlgorithms/__init__.py
+parallel_ga_processing/geneticAlgorithms/bla.py
 parallel_ga_processing/geneticAlgorithms/coarseGrainedBase.py
 parallel_ga_processing/geneticAlgorithms/decorator.py
 parallel_ga_processing/geneticAlgorithms/fineGrainedBase.py

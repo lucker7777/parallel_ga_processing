@@ -54,8 +54,13 @@ class GeneticAlgorithmBase(object):
             chromosome[rnd] = abs(chromosome[rnd] - 1)
         return chromosome
 
-    def _choose_individuals_based_on_fitness(self, evaluation_data):
+    @staticmethod
+    def is_ultimate_solution(fit_val):
         ultimate_min = 0
+        return fit_val == ultimate_min
+
+    def _choose_individuals_based_on_fitness(self, evaluation_data):
+
         ultimate_prob = 1
         individuals_to_choose_from = evaluation_data.sort_objects()
         best_individual = individuals_to_choose_from.pop(0)
@@ -63,7 +68,7 @@ class GeneticAlgorithmBase(object):
         chromosomes_reproducing = self._Individuals()
         chromosomes_reproducing.append_object(best_individual)
 
-        if best_individual.fit == ultimate_min:
+        if self.is_ultimate_solution(best_individual.fit):
             chromosomes_reproducing.best_individual = best_individual
             return chromosomes_reproducing
         # at least two individuals are required to reproduce
@@ -73,7 +78,7 @@ class GeneticAlgorithmBase(object):
             # weak individuals are replaced with new ones
 
             # this is because of division by zero
-            if chromosome_data.fit == ultimate_min:
+            if self.is_ultimate_solution(chromosome_data.fit):
                 prob = ultimate_prob
             else:
                 prob = fitness_min / chromosome_data.fit

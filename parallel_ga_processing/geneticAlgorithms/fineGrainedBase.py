@@ -14,7 +14,9 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
                          server_password,
                          fitness)
         self._chromosome = None
+        self._fitness_val = None
         self.mate_best_neighbouring_individual = mate_best_neighbouring_individual
+        self._best_found = False
 
     @log_method()
     def _store_initial_data(self, chromosome):
@@ -22,8 +24,10 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
 
     @log_method()
     def _process(self):
-        fit = self._fitness(self._chromosome)
-        to_send = [float(fit)]
+        if not self._best_found:
+            self._fitness_val = self._fitness(self._chromosome)
+
+        to_send = [float(self._fitness_val)]
         to_send.extend(list(map(float, self._chromosome)))
         return to_send
 
@@ -42,6 +46,9 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
 
     @log_method()
     def _finish_processing(self, neighbouring_chromosomes):
+        if self._best_found:
+            return self._fitness_val, list(map(float, self._chromosome))
+
         best_individual = neighbouring_chromosomes.best_individual
         if len(neighbouring_chromosomes.individuals) == 1 and best_individual is not None:
             return best_individual.fit, best_individual.chromosome
@@ -57,7 +64,10 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
             # choose one random individual
             self._mate_chromosomes_with_current(random.choice(chromosomes))
 
-        return self._fitness(self._chromosome), list(map(float, self._chromosome))
+        self._fitness_val = self._fitness(self._chromosome)
+        if self.is_ultimate_solution(self._fitness_val):
+            self._best_found = True
+        return self._fitness_val, list(map(float, self._chromosome))
 
     def _mate_chromosomes_with_current(self, neighbouring_individual):
         father = neighbouring_individual.chromosome
