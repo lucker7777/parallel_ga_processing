@@ -42,6 +42,7 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         received = list(map(float, received_data))
         fit_val = received.pop(0)
         vector = list(map(int, received))
+        logger.info("aa" + str(fit_val) + " chr " + str(vector))
         neighbours.append_object(self._Individual(fit_val, vector), source)
 
     @log_method()
@@ -52,7 +53,7 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         best_individual = neighbouring_chromosomes.best_individual
         if len(neighbouring_chromosomes.individuals) == 1 and best_individual is not None:
             self._fitness_val = float(best_individual.fit)
-            self._chromosome = list(map(float, self._chromosome))
+            self._chromosome = list(map(float, best_individual.chromosome))
             self._best_found = True
             return best_individual.fit, best_individual.chromosome
 
