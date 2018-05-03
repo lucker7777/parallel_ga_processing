@@ -51,6 +51,9 @@ class FineGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
 
         best_individual = neighbouring_chromosomes.best_individual
         if len(neighbouring_chromosomes.individuals) == 1 and best_individual is not None:
+            self._fitness_val = float(best_individual.fit)
+            self._chromosome = list(map(float, self._chromosome))
+            self._best_found = True
             return best_individual.fit, best_individual.chromosome
 
         chromosomes = neighbouring_chromosomes.sort_objects()
