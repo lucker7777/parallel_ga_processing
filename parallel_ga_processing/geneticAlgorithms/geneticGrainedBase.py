@@ -22,8 +22,8 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
                          number_of_generations=number_of_generations, fitness=fitness)
         self._num_of_neighbours = pow((2 * neighbourhood_size) + 1, 2) - 1
         self._neighbourhood_size = neighbourhood_size
-        # self._check_population_size(self._population_size_x, self._neighbourhood_size)
-        # self._check_population_size(self._population_size_y, self._neighbourhood_size)
+        self._check_population_size(self._population_size_x, self._neighbourhood_size)
+        self._check_population_size(self._population_size_y, self._neighbourhood_size)
 
         self._chromosome_size = chromosome_size
         self._number_of_generations = number_of_generations
