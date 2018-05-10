@@ -54,9 +54,9 @@ class GrainedGeneticAlgorithmBase(GeneticAlgorithmBase):
         :return: best_weight, chromosome
         """
         data = self._Individuals()
-        for i in range(0, self._population_size):
-            curr_fit = self._fitness(population[i])
-            data.append_object(self._Individual(curr_fit, population[i]))
+        for x in population:
+            curr_fit = self._fitness(x)
+            data.append_object(self._Individual(curr_fit, x))
         return data.sort_objects()[:num_of_best_chromosomes]
 
     @log_method()

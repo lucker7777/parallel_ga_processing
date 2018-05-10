@@ -12,13 +12,18 @@ class GeneticAlgorithmBase(object):
         self._fitness = fitness
 
     @log_method()
-    def initialize_population(self):
+    def initialize_population(self, size):
         """
         Generate the population
+        :param size specific size of the population
         :return: population
         """
+        if size is None:
+            size_of_population = self._population_size
+        else:
+            size_of_population = size
         population = []
-        for i in range(0, self._population_size):
+        for i in range(0, size_of_population):
             population.append(self._gen_individual())
         return population
 

@@ -5,7 +5,7 @@ from parallel_ga_processing.geneticAlgorithms import geneticGrainedBase
 
 
 class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
-    def __init__(self, population_size, chromosome_size,
+    def __init__(self, population_size, deme_size, chromosome_size,
                  number_of_generations,
                  neighbourhood_size, server_ip_addr, server_user,
                  server_password, num_of_migrants,
@@ -16,17 +16,19 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
                          server_password,
                          fitness)
         self._num_of_migrants = num_of_migrants
+        self._deme_size = deme_size
         self._population = None
 
     @log_method()
-    def initialize_population(self):
+    def initialize_population(self, size):
         """
         Generate random populations for every deme
+        :param size deme size
         :returns array of binary chromosomes
         """
         populations = []
         for i in range(0, self._population_size):
-            populations.append(super().initialize_population())
+            populations.append(super().initialize_population(size))
         return populations
 
     @log_method()
@@ -66,7 +68,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         # but the algorithm needs to continue because of other demes
         if best_individual is not None:
             logger.info("Ultimate best individual was found.")
-            while len(self._population) <= self._population_size:
+            while len(self._population) <= self._deme_size:
                 self._population.append(best_individual.chromosome)
             return
         else:
@@ -103,7 +105,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
             self._population.append(mother)
 
         # Generate new individuals in order to make new population the same size
-        while len(self._population) <= self._population_size:
+        while len(self._population) <= self._deme_size:
             self._population.append(self._gen_individual())
 
     def _evaluate_population(self):
@@ -112,7 +114,7 @@ class CoarseGrainedBase(geneticGrainedBase.GrainedGeneticAlgorithmBase):
         :returns best individual
         """
         evaluation_data = self._Individuals()
-        for i in range(self._population_size):
+        for i in range(self._deme_size):
             fit_val = self._fitness(self._population[i])
             evaluation_data.append_object(
                 self._Individual(fit_val, self._population[i]))

@@ -8,7 +8,7 @@ class MasterSlaveBase(geneticBase.GeneticAlgorithmBase):
     def __init__(self, population_size, chromosome_size,
                  number_of_generations, fitness):
         super().__init__(population_size, chromosome_size, number_of_generations, fitness)
-        self._population = self.initialize_population()
+        self._population = self.initialize_population(None)
 
     @log_method()
     def _process(self):

@@ -13,7 +13,7 @@ def run_fine_grained_ga(population_size, chromosome_size,
                           fitness=fitness,
                           mate_best_neighbouring_individual=mate_best_neighbouring_individual,
                           server_user=server_user, server_password=server_password)
-    populations = ins.initialize_population()
+    populations = ins.initialize_population(None)
     channels = ins.initialize_topology()
     result = list(futures.map(ins, populations, channels))
     dct = {}
