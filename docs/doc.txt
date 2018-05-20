@@ -1,1 +1,110 @@
-DOCUMENTATION
+DOCUMENTATIONPríprava RabbitMQ serveru
+RabbitMQ server sa inštaluje pomocou návodu na oficiálnej stránke RabbitMQ [39].
+Je nutné podotknúť, že inštalácia RabbitMQ vyžaduje taktiež nainštalovanie pod-
+pory pre jazyk Erlang. Funkčnosť je možné overiť príkazom rabbitmqctl status. Pri-
+hlasovanie na RabbitMQ server sa realizuje pomocou už existujúceho účtu s menom
+guest a prihlasovacím heslom guest. Pri prihlasovaní zo vzdialenej pracovnej stanice
+je však potreba vytvoriť nový účet. Ten sa vytvorí týmito príkazmi:
+rabbitmqctl add_user { meno } { heslo }
+rabbitmqctl set_user_tags { meno } administrator
+rabbitmqctl set_permissions -p / { meno } ".*" ".*" ".*"
+RabbitMQ poskytuje taktiež webové rozhranie pre správu účtov, kanálov, spojení
+a pre vyčítanie štatistík. Pripojiť sa na toto rozhranie možno pomocou webového
+prehliadača na adresu http://meno-serveru:15672/. V prípade, že nemožno použiť
+webový prehliadač alebo je potreba dát v JSON formáte, možno využiť taktiež API,
+ktoré RabbitMQ poskytuje na adrese http://meno-serveru:15672/api/. Následne
+možno nájsť na oficiálnych stránkach RabbitMQ aj dokumentáciu k API v príslušnej
+verzii. Webové rozhranie k RabbitMQ sa inštaluje nasledujúcim príkazom (druhým
+príkazom možno skontrolovať, či sa rozhranie korektne nastavilo a taktiež možno
+zistiť verziu, v ktorej sa nainštalovalo):
+rabbitmq - plugins enable rabbitmq_management
+curl -i -u guest : guest " http :// server :15672/ api / overview "
+Nakoniec je vhodné pripomenúť, že aj keď je v prostredí nutný RabbitMQ server
+len na jednej zo staníc, pre efektívnejšiu komunikáciu medzi pracovnými stanicami
+je možnosť využiť RabbitMQ server na každej stanici v móde cluster. Nastavovanie
+tohto módu je popísané v návode na oficálnej stránke RabbitMQ [38].
+Príprava Python modulu paralelného GA
+Príprava modulu paralelného GA na každej pracovnej stanici pozostáva z týchto
+príkazov:
+apt - get install openssh - server
+apt - get install python3 .6
+apt - get install python3 - pip
+python3 .6 -m pip install parallel_ga_processing
+74Ako už bolo spomenuté, pre použitie SSH je výhodné využiť prihlasovanie pomocou
+verejných kľúčov. Najprv sa vygenerujú kľúče na každej stanici pomocou linuxové-
+ho nástroja ssh-keygen a následne sa skopírujú verejné kľúče pomocou linuxového
+nástroja ssh-copy-id. Tie treba skopírovať z každej stanice, na ktorú je potreba sa
+prihlásiť, na stanicu, na ktorej sa spúšťa SCOOP.
+Nakoniec je potreba vytvoriť Python súbory. Na zvolenej zdrojovej stanici sa
+vytvorí na ľubovoľnej ceste v adresárovom strome zdrojový súbor s týmto kódom
+(hodnoty môžu byť ľubovoľné):
+
+from parallel_ga_processing import algorithmRunners
+
+ if __name__ == ’ __main__ ’:
+
+  algorithmRunners . launch (
+
+  hosts_list =[ " localhost " , " user@192 .168.56.2 " ] ,
+  num_of_workers =36 , executable = " run . py " ,
+  path = " / tmp / " )
+  
+V prípade viacerých staníc je nutné zvoliť si cestu rovnakú pre všetky stanice.
+Nemožno preto zvoliť cestu /home/user/, keďže stanice môžu mať rôznych uží-
+vateľov. V tejto práci sa využívala cesta /tmp/. Treba však pripomenúť, že operačný
+systém všetky dáta v tomto adresári pri vypnutí maže.
+Následne je potreba vytvoriť súbory na zvolenej ceste a to na každej stanici.
+Súbor v prípade použitia jemnozrnného a hrubozrnného modelu vyzerá podobne,
+preto boli zvolené príklady pre hrubozrnný a master-slave model.
+Súbor run.py na zdrojovej stanici pre hrubozrnný model:
+ from parallel_ga_processing import algorithmRunners
+
+ def fitness ( chromosome ):
+   return sum ( gene * gene for gene in chromosome )
+
+if __name__ == ’ __main__ ’:
+  algorithmRunners . run_coarse_grained_ga (
+  population_size =(6 , 6) , deme_size =10 ,
+  chromosome_size =4 , number_of_generations =10 ,
+  neighbourhood_size =1 , server_user = " genetic1 " ,
+  server_password = " genetic1 " ,
+  server_ip_addr = " 192.168.56.1 " ,
+  num_of_migrants =1 , fitness = fitness )
+
+Súbor run.py na ostatných staniciach pre hrubozrnný model (v prípade použitia
+modulu len na jednej pracovnej stanici sa tento kód nepoužíva):
+
+from parallel_ga_processing import algorithmRunners
+
+def fitness ( chromosome ):
+  return sum ( gene * gene for gene in chromosome )
+  algorithmRunners . run_coarse_grained_ga_remote (
+  population_size =(6 , 6) , deme_size =10 ,
+  chromosome_size =4 , number_of_generations =10 ,
+  neighbourhood_size =1 , server_user = " genetic1 " ,
+  server_password = " genetic1 " , num_of_migrants =1 ,
+  server_ip_addr = " 192.168.56.1 " , fitness = fitness )
+
+Parametre museli byť nastavené v súboroch na všetkých staniciach zhodne. To platí
+aj pre parameter server_ip_addr, ktorý musel byť nastavený na rovnakú IP adresu
+RabbitMQ serveru. Nemožno teda na zdrojovej stanici nastaviť IP adresu 127.0.0.1,
+aj keď logicky je to správne. Toho obmedzenie je zapríčinené modulom SCOOP.
+Súbor run.py na zdrojovej stanici pre master-slave model:
+from parallel_ga_processing import algorithmRunners
+def fitness ( chromosome ):
+  return sum ( gene * gene for gene in chromosome )
+if __name__ == ’ __main__ ’:
+  algorithmRunners . run_master_slave_ga (
+  population_size =36 ,
+  chromosome_size =4 , number_of_generations =10 ,
+  fitness = fitness )
+
+Súbor run.py na ostatných staniciach pre master-slave model (v prípade použitia
+modulu len na jednej pracovnej stanice sa tento kód nepoužíva):
+
+def fitness ( chromosome ):
+  return sum ( gene * gene for gene in chromosome )
+  
+Modul sa nakoniec spustí týmto príkazom:
+
+python3 .6 { cesta -k - zdrojov é mu - s ú boru }
